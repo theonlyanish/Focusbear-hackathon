@@ -1,0 +1,2 @@
+//struct for  buddy invite
+

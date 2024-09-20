@@ -1,25 +1,27 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
 
-const InviteAccountabilityBuddyScreen = () => {
-const [email, setEmail] = useState('');
+const AcceptInvitationScreen = ({ route }) => {
+const { inviterId } = route.params;
 
-const handleInvite = () => {
-// TODO: Implement API call to send invitation
-console.log('Inviting buddy:', email);
+const handleAccept = () => {
+// backend connection to handle accept
+console.log('Accepting invitation from:', inviterId);
+};
+
+const handleDecline = () => {
+//backend connection to decline invite
+console.log('Declining invitation from:', inviterId);
 };
 
 return (
 <View style={styles.container}>
-<Text style={styles.title}>Invite Accountability Buddy</Text>
-<TextInput
-style={styles.input}
-placeholder="Enter buddy's email"
-value={email}
-onChangeText={setEmail}
-keyboardType="email-address"
-/>
-<Button title="Send Invitation" onPress={handleInvite} />
+<Text style={styles.title}>Accountability Buddy Invitation</Text>
+<Text>You've been invited to be an accountability buddy!</Text>
+<View style={styles.buttonContainer}>
+<Button title="Accept" onPress={handleAccept} />
+<Button title="Decline" onPress={handleDecline} color="red" />
+</View>
 </View>
 );
 };
@@ -35,12 +37,11 @@ fontSize: 24,
 fontWeight: 'bold',
 marginBottom: 20,
 },
-input: {
-borderWidth: 1,
-borderColor: '#ccc',
-padding: 10,
-marginBottom: 20,
+buttonContainer: {
+flexDirection: 'row',
+justifyContent: 'space-around',
+marginTop: 20,
 },
 });
 
-export default InviteAccountabilityBuddyScreen;
+export default AcceptInvitationScreen;
