@@ -1,13 +1,31 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomePage from './screens/HomePage';
-import InviteAccountabilityBuddyScreen from './screens/InviteAccountabilityBuddyScreen';
-import RequestUnlockScreen from './screens/RequestUnlockScreen';
+import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import FriendsScreen from './screens/FriendsScreen';
 
+import HomePage from './screens/HomePage';
+import FriendsScreen from './screens/FriendsScreen';
+import LockScreen from './screens/LockScreen';
+import EmergencyUnlockScreen from './screens/EmergencyUnlockScreen';
+import UnlockRequestDetailScreen from './screens/UnlockRequestDetailScreen';
+
+const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const HomeStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Home" component={HomePage} />
+    <Stack.Screen name="UnlockRequestDetail" component={UnlockRequestDetailScreen} options={{ title: 'Unlock Request' }} />
+  </Stack.Navigator>
+);
+
+const LockStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Lock" component={LockScreen} />
+    <Stack.Screen name="EmergencyUnlock" component={EmergencyUnlockScreen} />
+  </Stack.Navigator>
+);
 
 function App(): React.JSX.Element {
   return (
@@ -18,19 +36,18 @@ function App(): React.JSX.Element {
             let iconName;
             if (route.name === 'Home') {
               iconName = 'home';
-            } else if (route.name === 'Invite') {
-              iconName = 'person-add';
-            } else if (route.name === 'Unlock') {
-              iconName = 'lock-open';
+            } else if (route.name === 'Friends') {
+              iconName = 'people';
+            } else if (route.name === 'Lock') {
+              iconName = 'lock';
             }
             return <Icon name={iconName} size={size} color={color} />;
           },
         })}
       >
-        <Tab.Screen name="Home" component={HomePage} />
+        <Tab.Screen name="HomeTab" component={HomeStack} options={{ title: 'Home' }} />
         <Tab.Screen name="Friends" component={FriendsScreen} />
-        <Tab.Screen name="Invite" component={InviteAccountabilityBuddyScreen} />
-        <Tab.Screen name="Unlock" component={RequestUnlockScreen} />
+        <Tab.Screen name="LockTab" component={LockStack} options={{ title: 'Lock' }} />
       </Tab.Navigator>
     </NavigationContainer>
   );

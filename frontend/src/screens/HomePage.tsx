@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import UnlockRequestCard from '../components/UnlockRequestCard';
 
-// Mock data for unlock requests 
+// Mock data for unlock requests (replace with actual data fetching logic)
 const mockUnlockRequests = [
-  { id: '1', name: 'Kent denial', reason: 'I was kidnapped by the mafia' },
-  { id: '2', name: 'Jane Smith', reason: 'Work deadline' },
+  { id: '1', name: 'John Doe', reason: 'Emergency call', duration: 3600 },
+  { id: '2', name: 'Jane Smith', reason: 'Work deadline', duration: 7200 },
 ];
 
 const HomePage = () => {
   const [unlockRequests, setUnlockRequests] = useState(mockUnlockRequests);
+  const navigation = useNavigation();
+
+  const handleRequestPress = (request) => {
+    navigation.navigate('UnlockRequestDetail', { request });
+  };
 
   const renderUnlockRequest = ({ item }) => (
-    <UnlockRequestCard name={item.name} reason={item.reason} />
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => handleRequestPress(item)}
+    >
+      <Text style={styles.cardTitle}>{item.name}</Text>
+      <Text style={styles.cardSubtitle}>Tap to view details</Text>
+    </TouchableOpacity>
   );
 
   return (
@@ -68,6 +80,26 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     marginTop: 20,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    color: '#666',
   },
 });
 
