@@ -22,14 +22,17 @@ const mockPotentialFriends = [
   { id: '3', name: 'Ethan Hunt', email: 'ethan@example.com' },
 ];
 
+// Add this type definition
+type Friend = string; // or a more complex type if needed
+
 const FriendsScreen = () => {
   const [friends, setFriends] = useState(mockFriends);
   const [invites, setInvites] = useState(mockInvites);
   const [potentialFriends, setPotentialFriends] = useState(mockPotentialFriends);
-  const [selectedFriends, setSelectedFriends] = useState([]);
+  const [selectedFriends, setSelectedFriends] = useState<Friend[]>([]);
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState('');
-  const [pendingInvites, setPendingInvites] = useState([]);
+  const [pendingInvites, setPendingInvites] = useState<Friend[]>([]);
 
   useEffect(() => {
     if (showBanner) {

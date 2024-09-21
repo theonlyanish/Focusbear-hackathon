@@ -3,18 +3,27 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
+interface LockScreenRouteParams {
+  pendingRequest?: boolean;
+}
+
+type RouteParams = {
+  pendingRequest?: boolean;
+};
+
 const LockScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const [isLocked, setIsLocked] = useState(true);
   const [remainingTime, setRemainingTime] = useState(0);
-  const [pendingRequest, setPendingRequest] = useState(null);
+  const [pendingRequest, setPendingRequest] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (route.params?.pendingRequest) {
-      setPendingRequest(route.params.pendingRequest);
+    const params = route.params as RouteParams;
+    if (params?.pendingRequest) {
+      setPendingRequest(params.pendingRequest);
       // Clear the parameter to prevent re-applying on screen focus
-      navigation.setParams({ pendingRequest: undefined });
+      navigation.setParams({ pendingRequest: undefined } as any);
     }
   }, [route.params?.pendingRequest]);
 

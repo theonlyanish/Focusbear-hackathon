@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../types/navigation';
 import UnlockRequestCard from '../components/UnlockRequestCard';
+import { YourRequestType } from '../types'; 
 
-// Mock data for unlock requests (replace with actual data fetching logic)
+// Mock data for unlock requests 
 const mockUnlockRequests = [
   { id: '1', name: 'John Doe', reason: 'Emergency call', duration: 3600 },
   { id: '2', name: 'Jane Smith', reason: 'Work deadline', duration: 7200 },
@@ -11,9 +13,9 @@ const mockUnlockRequests = [
 
 const HomePage = () => {
   const [unlockRequests, setUnlockRequests] = useState(mockUnlockRequests);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const handleRequestPress = (request) => {
+  const handleRequestPress = (request: YourRequestType) => {
     navigation.navigate('UnlockRequestDetail', { request });
   };
 
