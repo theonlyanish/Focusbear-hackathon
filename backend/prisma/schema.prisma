@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  name          String
+  friendsAsUser Friend[]      @relation("UserFriends")
+  friendsAsFriend Friend[]    @relation("FriendFriends")
+  invitations   Invitation[]  @relation("UserInvitations")
+  receivedInvitations Invitation[] @relation("FriendInvitations")
+}
+
+model Friend {
+  user_id       Int
+  friend_id     Int
+  invitation_id Int
+  added_at      DateTime     @default(now())
+  
+  user          User         @relation("UserFriends", fields: [user_id], references: [id], onDelete: Cascade)
+  friend        User         @relation("FriendFriends", fields: [friend_id], references: [id], onDelete: Cascade)
+  invitation    Invitation   @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, friend_id])
+}
+
+model Invitation {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  friend_id  Int
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+
+  user       User     @relation("UserInvitations", fields: [user_id], references: [id], onDelete: Cascade)
+  friend     User     @relation("FriendInvitations", fields: [friend_id], references: [id], onDelete: Cascade)
+  Friend     Friend[]
+}
