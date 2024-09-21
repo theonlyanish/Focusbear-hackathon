@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
+  
 import HomePage from './screens/HomePage';
 import FriendsScreen from './screens/FriendsScreen';
 import LockScreen from './screens/LockScreen';
@@ -41,7 +41,7 @@ function App(): React.JSX.Element {
             } else if (route.name === 'Lock') {
               iconName = 'lock';
             }
-            return <Icon name={iconName} size={size} color={color} />;
+            return <Icon name={iconName ?? ''} size={size} color={color} />;
           },
         })}
       >

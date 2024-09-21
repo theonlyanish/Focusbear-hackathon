@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 
-const EmergencyUnlockScreen = () => {
+type RootStackParamList = {
+  Lock: { pendingRequest: { reason: string; duration: number } };
+};
+
+type Props = {
+  navigation: NavigationProp<RootStackParamList>;
+};
+
+const EmergencyUnlockScreen = ({ navigation }: Props) => {
   const [reason, setReason] = useState('');
   const [hours, setHours] = useState('0');
   const [minutes, setMinutes] = useState('0');
-  const navigation = useNavigation();
 
   const handleSendRequest = () => {
     if (reason.trim() === '') {
