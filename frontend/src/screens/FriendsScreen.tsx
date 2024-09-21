@@ -28,6 +28,7 @@ const FriendsScreen = () => {
   const [potentialFriends, setPotentialFriends] = useState(mockPotentialFriends);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [showBanner, setShowBanner] = useState(false);
+  const [bannerMessage, setBannerMessage] = useState('');
   const [pendingInvites, setPendingInvites] = useState([]);
 
   useEffect(() => {
@@ -36,6 +37,12 @@ const FriendsScreen = () => {
       return () => clearTimeout(timer);
     }
   }, [showBanner]);
+
+  useEffect(() => {
+    // Mock behavior: Simulate invite responses after 5 seconds
+    const timer = setTimeout(mockInviteResponses, 5000);
+    return () => clearTimeout(timer);
+  }, [pendingInvites]);
 
   const renderFriend = ({ item }) => <FriendCard name={item.name} />;
   const renderInvite = ({ item }) => <InviteCard name={item.name} email={item.email} />;
@@ -58,10 +65,37 @@ const FriendsScreen = () => {
   };
 
   const inviteFriends = () => {
-    console.log('Inviting friends:', selectedFriends);
-    // Implement your invite logic here
     setPendingInvites([...pendingInvites, ...selectedFriends]);
     setSelectedFriends([]);
+    setBannerMessage("Invites sent successfully!");
+    setShowBanner(true);
+  };
+
+  const mockInviteResponses = () => {
+    const updatedPotentialFriends = [...potentialFriends];
+    const updatedFriends = [...friends];
+    const updatedPendingInvites = [...pendingInvites];
+
+    pendingInvites.forEach(id => {
+      const randomResponse = Math.random() < 0.5; // 50% chance of acceptance
+      const invitedFriend = potentialFriends.find(friend => friend.id === id);
+
+      if (randomResponse) {
+        // Accept invite
+        updatedFriends.push(invitedFriend);
+        updatedPotentialFriends.splice(updatedPotentialFriends.findIndex(friend => friend.id === id), 1);
+        setBannerMessage(`${invitedFriend.name} accepted your invite!`);
+      } else {
+        // Reject invite
+        setBannerMessage(`${invitedFriend.name} declined your invite.`);
+      }
+
+      updatedPendingInvites.splice(updatedPendingInvites.indexOf(id), 1);
+    });
+
+    setFriends(updatedFriends);
+    setPotentialFriends(updatedPotentialFriends);
+    setPendingInvites(updatedPendingInvites);
     setShowBanner(true);
   };
 
@@ -115,7 +149,7 @@ const FriendsScreen = () => {
           <Text style={styles.inviteButtonText}>Invite Friends</Text>
         </TouchableOpacity>
       </ScrollView>
-      {showBanner && <Banner message="Invites sent successfully!" />}
+      {showBanner && <Banner message={bannerMessage} />}
     </View>
   );
 };
