@@ -1,1 +1,1 @@
-{"name":"FocusbearHackathon","version":"0.0.1","private":true,"scripts":{"start":"node node_modules/react-native/local-cli/cli.js start"}}
+{"name":"FocusbearHackathon","version":"0.0.1","private":true,"scripts":{"start":"node node_modules/react-native/local-cli/cli.js start"},"dependencies":{"@react-native-picker/picker":"^2.8.1","@react-navigation/bottom-tabs":"^6.6.1","@react-navigation/native":"^6.1.18","@react-navigation/stack":"^6.4.1","react-native-vector-icons":"^10.2.0"}}
