@@ -102,7 +102,6 @@ export class UnlockRequestService {
 
   async respondToUnlockRequest(
     unlockRequestId: number,
-    userId: number,
     friendId: number,
     response: 'accepted' | 'rejected',
   ) {
@@ -139,9 +138,20 @@ export class UnlockRequestService {
     });
 
     // get the user who made the request
-    const user = await this.prisma.user.findUnique({
+    const unlockRequest = await this.prisma.unlockRequest.findUnique({
       where: { id: unlockRequestId },
+      include: { user: true },
     });
+
+    const user = unlockRequest.user;
+
+    // get the friend who get the request
+    const friend = await this.prisma.user.findUnique({
+      where: { id: friendId },
+    });
+
+    console.log('user', user);
+    console.log('friend', friend);
 
     // send notification to the user who made the request
     await this.notificationService.sendNotification(
@@ -151,6 +161,9 @@ export class UnlockRequestService {
         unlockRequestId,
         friendId,
         response,
+        message: `Your friend ${friend.name} has ${
+          response === 'accepted' ? 'accepted' : 'rejected'
+        } your unlock request`,
       },
     );
 

@@ -40,10 +40,12 @@ export class UnlockRequestController {
   }
 
   @Get('requests/:friendId')
-  @ApiOperation({ summary: 'Get unlock requests for a friend' })
+  @ApiOperation({
+    summary: 'Retrieve unlock requests from friends (as a buddy)',
+  })
   @ApiResponse({
     status: 200,
-    description: 'Returns the list of unlock requests for the friend.',
+    description: 'Returns the list of unlock requests for my friends.',
   })
   @ApiParam({ name: 'friendId', type: 'number' })
   async getUnlockRequestsForFriend(@Param('friendId') friendId: string) {
