@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Get,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 import { InviteService } from './invite.service';
@@ -38,11 +39,15 @@ export class InviteController {
     await this.inviteService.acceptInvite(userId, inviteId);
   }
 
-  @Get()
+  @Get(':userId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get list of invitations' })
-  @ApiBody({ schema: { example: { userId: 1 } } })
-  async getInvites(@Body('userId') userId: number) {
-    return this.inviteService.getInvites(userId);
+  @ApiParam({ name: 'userId', type: 'number' })
+  async getInvites(@Param('userId') userId: string) {
+    const parsedUserId = parseInt(userId, 10);
+    if (isNaN(parsedUserId)) {
+      throw new BadRequestException('Invalid userId');
+    }
+    return this.inviteService.getInvites(parsedUserId);
   }
 }
