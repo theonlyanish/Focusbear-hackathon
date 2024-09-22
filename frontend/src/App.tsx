@@ -39,10 +39,16 @@ const MainTabs = () => (
 function App(): React.JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{
+          headerBackTitleVisible: false,
+          headerTitleAlign: 'center',
+        }}
+      >
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Main" component={MainTabs} />
-        <Stack.Screen name="EmergencyUnlock" component={EmergencyUnlockScreen} options={{ headerShown: true, title: 'Emergency Unlock' }} />
+        <Stack.Screen name="EmergencyUnlock" component={EmergencyUnlockScreen} options={{ headerTitle: 'Emergency Unlock' }} />
         <Stack.Screen name="UnlockRequestDetail" component={UnlockRequestDetailScreen} options={{ headerShown: true, title: 'Unlock Request' }} />
       </Stack.Navigator>
       </NavigationContainer>

@@ -1,96 +1,85 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
-type RootStackParamList = {
-  Lock: { pendingRequest: { reason: string; duration: number } };
-};
-
-type Props = {
-  navigation: NavigationProp<RootStackParamList>;
-};
-
-const EmergencyUnlockScreen = ({ navigation }: Props) => {
+const EmergencyUnlockScreen = () => {
   const [reason, setReason] = useState('');
-  const [hours, setHours] = useState('0');
-  const [minutes, setMinutes] = useState('0');
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const navigation = useNavigation();
 
-  const handleSendRequest = () => {
-    if (reason.trim() === '') {
-      Alert.alert('Error', 'Please provide a reason for the unlock request.');
-      return;
-    }
-
-    const durationInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
-    if (durationInSeconds === 0) {
-      Alert.alert('Error', 'Please select a duration for the unlock request.');
-      return;
-    }
-
-    // In a real app, you'd send this request to your backend
-    console.log('Sending unlock request:', { reason, durationInSeconds });
-    
-    // Navigate back to the LockScreen with the pending request info
-    navigation.navigate('Lock', { 
-      pendingRequest: { 
-        reason, 
-        duration: durationInSeconds 
-      } 
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: '',
     });
-  };
+  }, [navigation]);
 
-  const generatePickerItems = (max: number) => {
-    return Array.from({ length: max + 1 }, (_, i) => (
-      <Picker.Item key={i} label={i.toString().padStart(2, '0')} value={i.toString()} />
-    ));
+  const handleRequest = () => {
+    // Implement request logic here
+    console.log('Requesting unlock:', { reason, hours, minutes });
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Emergency Unlock Request</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Reason for unlock"
-        value={reason}
-        onChangeText={setReason}
-        multiline
-      />
-      <Text style={styles.label}>Duration:</Text>
-      <View style={styles.pickerContainer}>
-        <View style={styles.pickerWrapper}>
-          <Picker
-            selectedValue={hours}
-            onValueChange={(itemValue) => setHours(itemValue)}
-            style={styles.picker}
-          >
-            {generatePickerItems(23)}
-          </Picker>
-          <Text style={styles.pickerLabel}>Hours</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Emergency Unlock Request</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Reason for unlock"
+          value={reason}
+          onChangeText={setReason}
+          multiline
+          numberOfLines={2}
+        />
+        <Text style={styles.durationLabel}>Duration:</Text>
+        <View style={styles.pickerContainer}>
+          <View style={styles.pickerWrapper}>
+            <View style={styles.pickerBackground}>
+              <Picker
+                selectedValue={hours}
+                onValueChange={(itemValue) => setHours(itemValue)}
+                style={styles.picker}
+              >
+                {[...Array(5)].map((_, i) => (
+                  <Picker.Item key={i} label={i.toString().padStart(2, '0')} value={i} />
+                ))}
+              </Picker>
+            </View>
+            <Text style={styles.pickerLabel}>Hours</Text>
+          </View>
+          <View style={styles.pickerWrapper}>
+            <View style={styles.pickerBackground}>
+              <Picker
+                selectedValue={minutes}
+                onValueChange={(itemValue) => setMinutes(itemValue)}
+                style={styles.picker}
+              >
+                {[...Array(60)].map((_, i) => (
+                  <Picker.Item key={i} label={i.toString().padStart(2, '0')} value={i} />
+                ))}
+              </Picker>
+            </View>
+            <Text style={styles.pickerLabel}>Minutes</Text>
+          </View>
         </View>
-        <View style={styles.pickerWrapper}>
-          <Picker
-            selectedValue={minutes}
-            onValueChange={(itemValue) => setMinutes(itemValue)}
-            style={styles.picker}
-          >
-            {generatePickerItems(59)}
-          </Picker>
-          <Text style={styles.pickerLabel}>Minutes</Text>
-        </View>
+        <TouchableOpacity style={styles.button} onPress={handleRequest}>
+          <Text style={styles.buttonText}>Send Request</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleSendRequest}>
-        <Text style={styles.buttonText}>Send Request</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: 24,
@@ -98,12 +87,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
+    height: 60,
+    textAlignVertical: 'top',
   },
-  label: {
+  durationLabel: {
     fontSize: 18,
     marginBottom: 10,
   },
@@ -116,20 +108,25 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  pickerBackground: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
   picker: {
     width: 100,
     height: 150,
   },
   pickerLabel: {
-    marginTop: 5,
+    marginTop: 10,
     fontSize: 16,
   },
   button: {
     backgroundColor: '#4CAF50',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
+    marginTop: 20,
   },
   buttonText: {
     color: 'white',

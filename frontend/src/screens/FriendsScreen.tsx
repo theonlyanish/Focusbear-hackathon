@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
+    width: '50%',
   },
   sectionTitle: {
     fontSize: 20,
