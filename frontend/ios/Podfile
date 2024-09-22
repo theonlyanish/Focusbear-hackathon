@@ -18,6 +18,8 @@ target 'FocusbearHackathon' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # Explicitly include react-native-screens
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
 
   target 'FocusbearHackathonTests' do
     inherit! :complete

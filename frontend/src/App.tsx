@@ -1,9 +1,12 @@
+
+import 'react-native-gesture-handler';  
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-  
+import { View, Text } from 'react-native';
+
 import HomePage from './screens/HomePage';
 import FriendsScreen from './screens/FriendsScreen';
 import LockScreen from './screens/LockScreen';
