@@ -7,8 +7,8 @@ const api = axios.create({
 });
 
 export const inviteService = {
-  sendInvite: async (userId: number, friendEmail: string) => {
-    const response = await api.post('/invites', { userId, friendEmail });
+  sendInvite: async (userId: number, friendId: number) => {
+    const response = await api.post('/invites', { userId, friendId });
     return response.data;
   },
   getInvites: async (userId: number) => {
@@ -21,6 +21,11 @@ export const inviteService = {
   },
   rejectInvite: async (inviteId: number, userId: number) => {
     const response = await api.post(`/invites/${inviteId}/reject`, { userId });
+    return response.data;
+  },
+  // Add this method
+  getFriends: async (userId: number) => {
+    const response = await api.get(`/friends?userId=${userId}`);
     return response.data;
   },
 };

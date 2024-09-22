@@ -1,82 +1,92 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../types/navigation';
 
-const UnlockRequestDetailScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
+type UnlockRequestDetailScreenRouteProp = RouteProp<RootStackParamList, 'UnlockRequestDetail'>;
+
+interface Props {
+  route: UnlockRequestDetailScreenRouteProp;
+}
+
+const UnlockRequestDetailScreen: React.FC<Props> = ({ route }) => {
   const { request } = route.params;
 
-  const formatDuration = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
-  };
-
   const handleAccept = () => {
-    // Implement accept logic here
+    // Handle accept logic
     console.log('Request accepted');
-    navigation.goBack();
   };
 
   const handleReject = () => {
-    // Implement reject logic here
+    // Handle reject logic
     console.log('Request rejected');
-    navigation.goBack();
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Unlock Request</Text>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.name}>{request.name}</Text>
-        <Text style={styles.label}>Reason:</Text>
-        <Text style={styles.value}>{request.reason}</Text>
-        <Text style={styles.label}>Duration:</Text>
-        <Text style={styles.value}>{formatDuration(request.duration)}</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Unlock Request</Text>
+        <View style={styles.card}>
+          <Text style={styles.name}>{request.name}</Text>
+          <View style={styles.detailRow}>
+            <Text style={styles.label}>Reason:</Text>
+            <Text style={styles.value}>{request.reason}</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.label}>Duration:</Text>
+            <Text style={styles.value}>{`${Math.floor(request.duration / 3600)}h ${(request.duration % 3600) / 60}m`}</Text>
+          </View>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={handleAccept}>
+            <Text style={styles.buttonText}>Accept</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={handleReject}>
+            <Text style={styles.buttonText}>Reject</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={handleAccept}>
-          <Text style={styles.buttonText}>Accept</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={handleReject}>
-          <Text style={styles.buttonText}>Reject</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
   },
-  detailsContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
+  card: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 10,
+    padding: 20,
     marginBottom: 20,
   },
   name: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 10,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    marginBottom: 5,
   },
   label: {
-    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginRight: 5,
   },
   value: {
-    fontSize: 16,
-    marginBottom: 16,
+    flex: 1,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -84,21 +94,20 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 12,
+    padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+    marginHorizontal: 5,
   },
   acceptButton: {
     backgroundColor: '#4CAF50',
-    marginRight: 8,
   },
   rejectButton: {
     backgroundColor: '#F44336',
-    marginLeft: 8,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
