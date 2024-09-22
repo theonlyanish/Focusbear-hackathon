@@ -63,7 +63,7 @@ export class UnlockRequestService {
     });
 
     // send notification to all friends
-    await this.sendUnlockRequestNotifications(
+    await this.sendUnlockRequestNotificationsToFriends(
       unlockRequest,
       user,
       user.friendsAsUser,
@@ -79,7 +79,7 @@ export class UnlockRequestService {
     });
   }
 
-  async sendUnlockRequestNotifications(
+  async sendUnlockRequestNotificationsToFriends(
     unlockRequest: UnlockRequest,
     user: User,
     friends: Friend[],
@@ -94,7 +94,7 @@ export class UnlockRequestService {
           userName: user.name,
           reason: unlockRequest.reason,
           timePeriod: unlockRequest.timePeriod,
-          message: `Your friend ${user.name} has requested to unlock your location for ${unlockRequest.timePeriod} minutes`,
+          message: `Your friend ${user.name} has requested to unlock their phone for ${unlockRequest.timePeriod} minutes`,
         },
       );
     }
