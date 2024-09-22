@@ -4,6 +4,7 @@ import FriendCard from '../components/FriendCard';
 import InviteCard from '../components/InviteCard';
 import InviteFriendCard from '../components/InviteFriendCard';
 import { inviteService, userService } from '../services/api';
+import axios from 'axios';
 
 const FriendsScreen = () => {
   const [friends, setFriends] = useState([]);
@@ -26,7 +27,10 @@ const FriendsScreen = () => {
       
       const [friendsData, invitesData, usersData] = await Promise.all([
         inviteService.getFriends(currentUserId),
-        inviteService.getInvites(currentUserId),
+        inviteService.getInvites(currentUserId).catch(err => {
+          console.warn('Failed to fetch invites:', err);
+          return []; 
+        }),
         userService.getUsers(),
       ]);
       
@@ -45,6 +49,10 @@ const FriendsScreen = () => {
     } catch (err) {
       setError('Failed to fetch data. Please try again.');
       console.error('Error fetching data:', err);
+      if (axios.isAxiosError(err)) {
+        console.error('Request that failed:', err.config);
+        console.error('Error response:', err.response);
+      }
     } finally {
       setLoading(false);
     }

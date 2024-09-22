@@ -9,17 +9,29 @@ interface Props {
   route: UnlockRequestDetailScreenRouteProp;
 }
 
-const UnlockRequestDetailScreen: React.FC<Props> = ({ route }) => {
+const UnlockRequestDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const { request } = route.params;
 
-  const handleAccept = () => {
-    // Handle accept logic
-    console.log('Request accepted');
+  const handleAccept = async () => {
+    try {
+      await unlockService.respondToUnlockRequest(request.id, global.currentUser.id, 'accepted');
+      Alert.alert('Success', 'Unlock request accepted');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error accepting unlock request:', error);
+      Alert.alert('Error', 'Failed to accept unlock request');
+    }
   };
 
-  const handleReject = () => {
-    // Handle reject logic
-    console.log('Request rejected');
+  const handleReject = async () => {
+    try {
+      await unlockService.respondToUnlockRequest(request.id, global.currentUser.id, 'rejected');
+      Alert.alert('Success', 'Unlock request rejected');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error rejecting unlock request:', error);
+      Alert.alert('Error', 'Failed to reject unlock request');
+    }
   };
 
   return (
@@ -27,14 +39,14 @@ const UnlockRequestDetailScreen: React.FC<Props> = ({ route }) => {
       <View style={styles.container}>
         <Text style={styles.title}>Unlock Request</Text>
         <View style={styles.card}>
-          <Text style={styles.name}>{request.name}</Text>
+          <Text style={styles.name}>{request.user.name}</Text>
           <View style={styles.detailRow}>
             <Text style={styles.label}>Reason:</Text>
             <Text style={styles.value}>{request.reason}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.label}>Duration:</Text>
-            <Text style={styles.value}>{`${Math.floor(request.duration / 3600)}h ${(request.duration % 3600) / 60}m`}</Text>
+            <Text style={styles.value}>{`${Math.floor(request.timePeriod / 3600)}h ${(request.timePeriod % 3600) / 60}m`}</Text>
           </View>
         </View>
         <View style={styles.buttonContainer}>
