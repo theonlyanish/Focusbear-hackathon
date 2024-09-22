@@ -30,7 +30,7 @@ export class UnlockRequestService {
         timePeriod,
         responses: {
           create: user.friendsAsUser.map((friend) => ({
-            friend_id: friend.friend_id,
+            friend_id: friend.friend_id, // create default responses from user friends
           })),
         },
       },

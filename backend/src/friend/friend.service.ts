@@ -11,7 +11,7 @@ export class FriendService {
         OR: [{ user_id: userId }, { friend_id: userId }],
       },
       include: {
-        user: true,
+        user: false,
         friend: true,
       },
     });

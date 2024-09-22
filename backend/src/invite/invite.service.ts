@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NotificationService } from 'src/notifications/notifications.service';
+import { ConflictException } from '@nestjs/common';
 
 @Injectable()
 export class InviteService {
@@ -26,6 +27,20 @@ export class InviteService {
       }
       if (!friend) {
         throw new NotFoundException(`Friend with id ${friendId} not found`);
+      }
+
+      // check if invitation already exist between user & friend
+      const existingInvitation = await this.prisma.invitation.findFirst({
+        where: {
+          OR: [
+            { user_id: userId, friend_id: friendId },
+            { user_id: friendId, friend_id: userId },
+          ],
+        },
+      });
+
+      if (existingInvitation) {
+        throw new ConflictException('Invitation already exists');
       }
 
       const invitation = await this.prisma.invitation.create({
