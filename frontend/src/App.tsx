@@ -16,7 +16,7 @@ const Stack = createStackNavigator();
 
 const HomeStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Home" component={HomePage} />
+    <Stack.Screen name="HomeMain" component={HomePage} />
     <Stack.Screen name="UnlockRequestDetail" component={UnlockRequestDetailScreen} options={{ title: 'Unlock Request' }} />
   </Stack.Navigator>
 );
@@ -41,7 +41,7 @@ function App(): React.JSX.Element {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-            if (route.name === 'Home') {
+            if (route.name === 'HomeMain') {
               iconName = 'home';
             } else if (route.name === 'Friends') {
               iconName = 'people';
@@ -56,7 +56,7 @@ function App(): React.JSX.Element {
           headerShown: false,
         })}
       >
-        <Tab.Screen name="Home" component={HomeStack} />
+        <Tab.Screen name="HomeMain" component={HomeStack} />
         <Tab.Screen name="Friends" component={FriendsStack} />
         <Tab.Screen name="Lock" component={LockStack} />
       </Tab.Navigator>

@@ -10,21 +10,16 @@ export class InviteService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createInvite(userId: number, friendId: number): Promise<void> {
+    console.log(`Creating invite for userId: ${userId}, friendId: ${friendId}`);
     try {
-      console.log(`Attempting to create invite for userId: ${userId}, friendId: ${friendId}`);
-      
-      // Check if both users exist
       const [user, friend] = await Promise.all([
         this.prisma.user.findUnique({ where: { id: userId } }),
         this.prisma.user.findUnique({ where: { id: friendId } }),
       ]);
 
-      if (!user || !friend) {
-        console.error(`User or friend not found. userId: ${userId}, friendId: ${friendId}`);
-        throw new Error('User or friend not found');
-      }
+      if (!user) throw new NotFoundException(`User with id ${userId} not found`);
+      if (!friend) throw new NotFoundException(`Friend with id ${friendId} not found`);
 
-      // Create the invitation
       await this.prisma.invitation.create({
         data: {
           user_id: userId,
@@ -32,10 +27,9 @@ export class InviteService {
           status: 'PENDING',
         },
       });
-      
-      console.log('Invite created successfully');
+      console.log('Invite created successfully in database');
     } catch (error) {
-      console.error('Error in createInvite:', error);
+      console.error('Error in createInvite service:', error);
       throw error;
     }
   }

@@ -39,12 +39,14 @@ const FriendsScreen = () => {
 
   const handleInvite = async (userId) => {
     try {
-      await inviteService.sendInvite(1, userId); // Replace 1 with the actual user ID
+      console.log('Sending invite for userId:', userId);
+      await inviteService.sendInvite(1, userId); // Replace 1 with actual user ID
+      console.log('Invite sent successfully');
       // Update the UI to reflect the sent invite
       setUsers(users.filter(user => user.id !== userId));
       setSelectedUsers(selectedUsers.filter(id => id !== userId));
     } catch (err) {
-      console.error('Failed to send invite:', err);
+      console.error('Failed to send invite:', err.response?.data || err.message);
       // Handle error (e.g., show an error message to the user)
     }
   };
