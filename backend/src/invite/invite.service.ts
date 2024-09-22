@@ -127,11 +127,63 @@ export class InviteService {
     }
   }
 
+  // async getInvites(userId: number) {
+  //   return this.prisma.invitation.findMany({
+  //     where: {
+  //       friend_id: userId,
+  //       status: 'PENDING'
+  //     },
+  //     include: {
+  //       user: true
+  //     }
+  //   });
+  // }
   async getInvites(userId: number) {
     return this.prisma.invitation.findMany({
       where: {
-        OR: [{ user_id: userId }, { friend_id: userId }],
+        friend_id: userId,
+        status: 'PENDING'
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
     });
+  }
+
+  async rejectInvite(userId: string, inviteId: string): Promise<void> {
+    try {
+      const parsedUserId = parseInt(userId, 10);
+      const parsedInviteId = parseInt(inviteId, 10);
+
+      const invite = await this.prisma.invitation.findUnique({
+        where: { id: parsedInviteId },
+      });
+
+      if (!invite) {
+        throw new NotFoundException(`Invite with id ${inviteId} not found`);
+      }
+
+      if (invite.friend_id !== parsedUserId) {
+        throw new UnauthorizedException(
+          'You are not authorized to reject this invite',
+        );
+      }
+
+      await this.prisma.invitation.update({
+        where: { id: parsedInviteId },
+        data: { status: 'REJECTED' },
+      });
+
+      // Optionally, send a notification to the user who sent the invite
+    } catch (error) {
+      console.error('Error in rejectInvite service:', error);
+      throw error;
+    }
   }
 }

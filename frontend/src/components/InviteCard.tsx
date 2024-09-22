@@ -9,23 +9,23 @@ interface InviteCardProps {
 }
 
 const InviteCard: React.FC<InviteCardProps> = ({ name, email, onAccept, onReject }) => {
-    return (
-      <View style={styles.card}>
-        <View style={styles.info}>
-          <Text style={styles.name}>{name}</Text>
-          <Text style={styles.email}>{email}</Text>
-        </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={onAccept}>
-            <Text style={styles.buttonText}>Accept</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.declineButton]} onPress={onReject}>
-            <Text style={styles.buttonText}>Decline</Text>
-          </TouchableOpacity>
-        </View>
+  return (
+    <View style={styles.card}>
+      <View style={styles.info}>
+        <Text style={styles.name}>{`Invite from ${name}`}</Text>
+        <Text style={styles.email}>{email}</Text>
       </View>
-    );
-  };
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={onAccept}>
+          <Text style={styles.buttonText}>Accept</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.declineButton]} onPress={onReject}>
+          <Text style={styles.buttonText}>Decline</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {

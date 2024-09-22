@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { LogBox } from 'react-native';
 
 import LoginScreen from './screens/LoginScreen';
 import HomePage from './screens/HomePage';
@@ -46,7 +45,7 @@ function App(): React.JSX.Element {
         <Stack.Screen name="EmergencyUnlock" component={EmergencyUnlockScreen} options={{ headerShown: true, title: 'Emergency Unlock' }} />
         <Stack.Screen name="UnlockRequestDetail" component={UnlockRequestDetailScreen} options={{ headerShown: true, title: 'Unlock Request' }} />
       </Stack.Navigator>
-    </NavigationContainer>
+      </NavigationContainer>
   );
 }
 

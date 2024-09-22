@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Activit
 import FriendCard from '../components/FriendCard';
 import InviteCard from '../components/InviteCard';
 import InviteFriendCard from '../components/InviteFriendCard';
-import { inviteService, userService } from '../services/api';
+import { inviteService, userService, friendService } from '../services/api';
 import axios from 'axios';
+import { User } from '../types/User';
+
 
 const FriendsScreen = () => {
   const [friends, setFriends] = useState([]);
@@ -12,7 +14,7 @@ const FriendsScreen = () => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -26,11 +28,8 @@ const FriendsScreen = () => {
       console.log('Fetching data for user ID:', currentUserId);
       
       const [friendsData, invitesData, usersData] = await Promise.all([
-        inviteService.getFriends(currentUserId),
-        inviteService.getInvites(currentUserId).catch(err => {
-          console.warn('Failed to fetch invites:', err);
-          return []; 
-        }),
+        friendService.getFriends(currentUserId),
+        inviteService.getInvites(currentUserId),
         userService.getUsers(),
       ]);
       
@@ -38,21 +37,27 @@ const FriendsScreen = () => {
       console.log('Invites data:', invitesData);
       console.log('Users data:', usersData);
       
-      setFriends(friendsData);
-      setInvites(invitesData);
+      setFriends(friendsData.map(friend => ({
+        id: friend.friend.id,
+        name: friend.friend.name,
+        email: friend.friend.email
+      })));
+      //setInvites(invitesData);
+      setInvites(invitesData.map(invite => ({
+        id: invite.id,
+        name: invite.user.name,
+        email: invite.user.email,
+        userId: invite.user.id
+      })));
       const potentialFriends = usersData.filter(user => 
         user.id !== currentUserId && 
-        !friendsData.some(friend => friend.id === user.id) &&
+        !friendsData.some(friend => friend.friend.id === user.id) &&
         !invitesData.some(invite => invite.friend_id === user.id)
       );
       setUsers(potentialFriends);
     } catch (err) {
-      setError('Failed to fetch data. Please try again.');
       console.error('Error fetching data:', err);
-      if (axios.isAxiosError(err)) {
-        console.error('Request that failed:', err.config);
-        console.error('Error response:', err.response);
-      }
+      setError('Failed to fetch data. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -76,7 +81,8 @@ const FriendsScreen = () => {
     try {
       await inviteService.acceptInvite(inviteId, global.currentUser.id);
       const acceptedInvite = invites.find(invite => invite.id === inviteId);
-      setFriends([...friends, acceptedInvite]);
+      const inviter = users.find(user => user.id === acceptedInvite.user_id);
+      setFriends([...friends, inviter]);
       setInvites(invites.filter(invite => invite.id !== inviteId));
       setUsers(users.filter(user => user.id !== acceptedInvite.user_id));
     } catch (err) {

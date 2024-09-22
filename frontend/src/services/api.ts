@@ -23,23 +23,33 @@ api.interceptors.response.use(response => {
 
 export const inviteService = {
   sendInvite: async (userId: number, friendId: number) => {
-    const response = await api.post('/friends/invite', { userId, friendId });
+    const response = await api.post('/invites', { userId, friendId });
     return response.data;
   },
   getInvites: async (userId: number) => {
-    const response = await api.get(`/friends/invites?userId=${userId}`);
+    const response = await api.get(`/invites/${userId}`);
     return response.data;
   },
   acceptInvite: async (inviteId: number, userId: number) => {
-    const response = await api.post(`/friends/invites/${inviteId}/accept`, { userId });
+    const response = await api.post(`/invites/${inviteId}/accept`, { userId });
     return response.data;
   },
   rejectInvite: async (inviteId: number, userId: number) => {
-    const response = await api.post(`/friends/invites/${inviteId}/reject`, { userId });
+    const response = await api.post(`/invites/${inviteId}/reject`, { userId });
     return response.data;
   },
+};
+
+export const friendService = {
   getFriends: async (userId: number) => {
-    const response = await api.get(`/friends?userId=${userId}`);
+    const response = await api.get(`/friends/${userId}`);
+    return response.data;
+  },
+};
+
+export const lockService = {
+  getLockStatus: async () => {
+    const response = await api.get('/lock-status');
     return response.data;
   },
 };
@@ -48,21 +58,6 @@ export const userService = {
   getUsers: async () => {
     const response = await api.get('/users');
     return response.data;
-  },
-};
-
-export const unlockService = {
-  sendUnlockRequest: async (userId: number, reason: string, timePeriod: number) => {
-    const response = await api.post('/unlocks', { userId, reason, timePeriod });
-    return response.data;
-  },
-  getUnlockRequestsForFriend: async (friendId: number) => {
-    const response = await api.get(`/unlock-requests/requests/${friendId}`);
-    return response.data;
-  },
-  respondToUnlockRequest: async (unlockRequestId: number, friendId: number, response: 'accepted' | 'rejected') => {
-    const apiResponse = await api.post(`/unlock-requests/${unlockRequestId}/${response}`, { friendId });
-    return apiResponse.data;
   },
 };
 

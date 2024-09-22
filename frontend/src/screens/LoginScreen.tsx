@@ -29,8 +29,11 @@ const LoginScreen = () => {
     setLoading(true);
     const user = users.find(u => u.name === name && u.email === email);
     if (user) {
-      // Store the user information (you might want to use a more robust state management solution in a real app)
-      global.currentUser = user;
+      global.currentUser = {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      };
       navigation.replace('Main');
     } else {
       Alert.alert('Error', 'User not found. Please check your name and email.');

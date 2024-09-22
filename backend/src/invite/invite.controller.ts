@@ -50,4 +50,16 @@ export class InviteController {
     }
     return this.inviteService.getInvites(parsedUserId);
   }
+
+  @Post(':inviteId/reject')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reject an invitation' })
+  @ApiParam({ name: 'inviteId', type: 'string' })
+  @ApiBody({ schema: { example: { userId: 1 } } })
+  async rejectInvite(
+    @Body('userId') userId: string,
+    @Param('inviteId') inviteId: string,
+  ): Promise<void> {
+    await this.inviteService.rejectInvite(userId, inviteId);
+  }
 }
