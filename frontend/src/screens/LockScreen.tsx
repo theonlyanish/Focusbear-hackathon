@@ -1,111 +1,77 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation, useRoute } from '@react-navigation/native';
-
-interface LockScreenRouteParams {
-  pendingRequest?: boolean;
-}
-
-type RouteParams = {
-  pendingRequest?: boolean;
-};
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { unlockService } from '../services/api';
 
 const LockScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const [isLocked, setIsLocked] = useState(true);
-  const [remainingTime, setRemainingTime] = useState(0);
-  const [pendingRequest, setPendingRequest] = useState<boolean | null>(null);
+  const [unlockRequests, setUnlockRequests] = useState([]);
 
   useEffect(() => {
-    const params = route.params as RouteParams;
-    if (params?.pendingRequest) {
-      setPendingRequest(params.pendingRequest);
-      // Clear the parameter to prevent re-applying on screen focus
-      navigation.setParams({ pendingRequest: undefined } as any);
-    }
-  }, [route.params?.pendingRequest]);
+    fetchUnlockRequests();
+  }, []);
 
-  useEffect(() => {
-    let timer;
-    if (!isLocked && remainingTime > 0) {
-      timer = setInterval(() => {
-        setRemainingTime((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(timer);
-            setIsLocked(true);
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [isLocked, remainingTime]);
-
-  const handleEmergencyUnlock = () => {
-    navigation.navigate('EmergencyUnlock');
-  };
-
-  // Mock function to simulate approval from the other side
-  const simulateApproval = () => {
-    if (pendingRequest) {
-      setIsLocked(false);
-      setRemainingTime(pendingRequest.duration);
-      setPendingRequest(null);
+  const fetchUnlockRequests = async () => {
+    try {
+      const requests = await unlockService.getUnlockRequests(global.currentUser.id);
+      setUnlockRequests(requests);
+    } catch (error) {
+      console.error('Error fetching unlock requests:', error);
+      Alert.alert('Error', 'Failed to fetch unlock requests');
     }
   };
 
-  const formatTime = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes
-      .toString()
-      .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  const handleAcceptUnlock = async (unlockRequestId) => {
+    try {
+      await unlockService.acceptUnlockRequest(unlockRequestId);
+      Alert.alert('Success', 'Unlock request accepted');
+      fetchUnlockRequests(); // Refresh the list
+    } catch (error) {
+      console.error('Error accepting unlock request:', error);
+      Alert.alert('Error', 'Failed to accept unlock request');
+    }
   };
+
+  const handleRejectUnlock = async (unlockRequestId) => {
+    try {
+      await unlockService.rejectUnlockRequest(unlockRequestId);
+      Alert.alert('Success', 'Unlock request rejected');
+      fetchUnlockRequests(); // Refresh the list
+    } catch (error) {
+      console.error('Error rejecting unlock request:', error);
+      Alert.alert('Error', 'Failed to reject unlock request');
+    }
+  };
+
+  const renderUnlockRequest = ({ item }) => (
+    <View style={styles.requestItem}>
+      <Text>{item.requesterName} wants to unlock your phone</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.button, styles.acceptButton]}
+          onPress={() => handleAcceptUnlock(item.id)}
+        >
+          <Text style={styles.buttonText}>Accept</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, styles.rejectButton]}
+          onPress={() => handleRejectUnlock(item.id)}
+        >
+          <Text style={styles.buttonText}>Reject</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      <Icon 
-        name={isLocked ? 'lock' : 'lock-open'} 
-        size={100} 
-        color={isLocked ? '#4CAF50' : '#FFA500'} 
-      />
-      <Text style={styles.lockText}>
-        {isLocked ? 'You are locked' : 'Temporarily unlocked'}
-      </Text>
-      {!isLocked && (
-        <Text style={styles.timerText}>
-          Time remaining: {formatTime(remainingTime)}
-        </Text>
-      )}
-      {isLocked && !pendingRequest && (
-        <TouchableOpacity style={styles.button} onPress={handleEmergencyUnlock}>
-          <Text style={styles.buttonText}>Emergency Unlock</Text>
-        </TouchableOpacity>
-      )}
-      {pendingRequest && (
-        <View style={styles.pendingContainer}>
-          <Text style={styles.pendingText}>Unlock request pending</Text>
-          <Text style={styles.pendingDetails}>
-            Reason: {pendingRequest.reason}
-          </Text>
-          <Text style={styles.pendingDetails}>
-            Duration: {formatTime(pendingRequest.duration)}
-          </Text>
-        </View>
-      )}
-      {!isLocked && (
-        <Text style={styles.unlockMessage}>You can now use your device</Text>
-      )}
-      
-      {/* Temporary button to simulate approval (remove in production) */}
-      {pendingRequest && (
-        <TouchableOpacity style={styles.simulateButton} onPress={simulateApproval}>
-          <Text style={styles.simulateButtonText}>Simulate Approval</Text>
-        </TouchableOpacity>
+      <Text style={styles.title}>Unlock Requests</Text>
+      {unlockRequests.length > 0 ? (
+        <FlatList
+          data={unlockRequests}
+          renderItem={renderUnlockRequest}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      ) : (
+        <Text style={styles.noRequestsText}>No unlock requests</Text>
       )}
     </View>
   );
@@ -114,60 +80,43 @@ const LockScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    padding: 20,
   },
-  lockText: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 20,
     marginBottom: 20,
   },
-  timerText: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#FF6347',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  unlockMessage: {
-    fontSize: 18,
-    color: '#4CAF50',
-    marginTop: 20,
-  },
-  simulateButton: {
-    backgroundColor: '#3498db',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  simulateButtonText: {
-    color: 'white',
-    fontSize: 14,
-  },
-  pendingContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  pendingText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFA500',
+  requestItem: {
+    backgroundColor: '#f0f0f0',
+    padding: 15,
+    borderRadius: 8,
     marginBottom: 10,
   },
-  pendingDetails: {
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+  button: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  acceptButton: {
+    backgroundColor: '#4CAF50',
+  },
+  rejectButton: {
+    backgroundColor: '#F44336',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  noRequestsText: {
     fontSize: 16,
-    marginBottom: 5,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

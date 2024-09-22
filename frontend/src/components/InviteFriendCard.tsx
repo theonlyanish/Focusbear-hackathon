@@ -5,28 +5,22 @@ interface InviteFriendCardProps {
   name: string;
   email: string;
   isSelected: boolean;
-  isPending: boolean;
   onSelect: () => void;
 }
 
-const InviteFriendCard: React.FC<InviteFriendCardProps> = ({ name, email, isSelected, isPending, onSelect }) => {
+const InviteFriendCard: React.FC<InviteFriendCardProps> = ({ name, email, isSelected, onSelect }) => {
   return (
     <TouchableOpacity 
-      style={[
-        styles.card, 
-        isSelected && styles.selectedCard,
-        isPending && styles.pendingCard
-      ]} 
+      style={[styles.card, isSelected && styles.selectedCard]} 
       onPress={onSelect}
-      disabled={isPending}
     >
       <View style={styles.info}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.email}>{email}</Text>
       </View>
-      {isPending && (
-        <View style={styles.pendingStatus}>
-          <Text style={styles.pendingText}>Pending</Text>
+      {isSelected && (
+        <View style={styles.selectedIndicator}>
+          <Text style={styles.selectedText}>Selected</Text>
         </View>
       )}
     </TouchableOpacity>
@@ -52,9 +46,6 @@ const styles = StyleSheet.create({
     borderColor: '#1890ff',
     borderWidth: 1,
   },
-  pendingCard: {
-    opacity: 0.6,
-  },
   info: {
     flex: 1,
   },
@@ -66,12 +57,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  pendingStatus: {
-    backgroundColor: '#ffa500',
+  selectedIndicator: {
+    backgroundColor: '#1890ff',
     borderRadius: 4,
     padding: 4,
   },
-  pendingText: {
+  selectedText: {
     color: '#fff',
     fontSize: 12,
     fontWeight: 'bold',

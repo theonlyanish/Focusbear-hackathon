@@ -14,13 +14,15 @@ export class InviteService {
   ) {}
 
   async createInvite(userId: number, friendId: number): Promise<void> {
-    console.log(`Creating invite for userId: ${userId}, friendId: ${friendId}`);
-    try {
-      const [user, friend] = await Promise.all([
-        this.prisma.user.findUnique({ where: { id: userId } }),
-        this.prisma.user.findUnique({ where: { id: friendId } }),
-      ]);
+    // Check if both users exist
+    const [user, friend] = await Promise.all([
+      this.prisma.user.findUnique({ where: { id: userId } }),
+      this.prisma.user.findUnique({ where: { id: friendId } }),
+    ]);
 
+    if (!user || !friend) {
+      throw new Error('User or friend not found');
+    }
       if (!user)
         throw new NotFoundException(`User with id ${userId} not found`);
       if (!friend)

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView, Alert } from 'react-native';
 import FriendCard from '../components/FriendCard';
 import InviteCard from '../components/InviteCard';
 import InviteFriendCard from '../components/InviteFriendCard';
 import { inviteService, userService } from '../services/api';
+import axios from 'axios';
 
 const FriendsScreen = () => {
   const [friends, setFriends] = useState([]);
@@ -11,7 +12,7 @@ const FriendsScreen = () => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -21,42 +22,90 @@ const FriendsScreen = () => {
     setLoading(true);
     setError(null);
     try {
+      const currentUserId = global.currentUser.id;
+      console.log('Fetching data for user ID:', currentUserId);
+      
       const [friendsData, invitesData, usersData] = await Promise.all([
-        inviteService.getInvites(1), // Replace 1 with the actual user ID
-        inviteService.getInvites(1), // Replace 1 with the actual user ID
+        inviteService.getFriends(currentUserId),
+        inviteService.getInvites(currentUserId).catch(err => {
+          console.warn('Failed to fetch invites:', err);
+          return []; 
+        }),
         userService.getUsers(),
       ]);
+      
+      console.log('Friends data:', friendsData);
+      console.log('Invites data:', invitesData);
+      console.log('Users data:', usersData);
+      
       setFriends(friendsData);
       setInvites(invitesData);
-      setUsers(usersData);
+      const potentialFriends = usersData.filter(user => 
+        user.id !== currentUserId && 
+        !friendsData.some(friend => friend.id === user.id) &&
+        !invitesData.some(invite => invite.friend_id === user.id)
+      );
+      setUsers(potentialFriends);
     } catch (err) {
       setError('Failed to fetch data. Please try again.');
-      console.error(err);
+      console.error('Error fetching data:', err);
+      if (axios.isAxiosError(err)) {
+        console.error('Request that failed:', err.config);
+        console.error('Error response:', err.response);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInvite = async (userId) => {
+  const handleInvite = async () => {
     try {
-      console.log('Sending invite for userId:', userId);
-      await inviteService.sendInvite(1, userId); // Replace 1 with actual user ID
-      console.log('Invite sent successfully');
-      // Update the UI to reflect the sent invite
-      setUsers(users.filter(user => user.id !== userId));
-      setSelectedUsers(selectedUsers.filter(id => id !== userId));
+      for (const userId of selectedUsers) {
+        await inviteService.sendInvite(global.currentUser.id, userId);
+      }
+      Alert.alert('Success', 'Invitations sent successfully');
+      setSelectedUsers([]);
+      fetchData(); // Refresh the data
     } catch (err) {
-      console.error('Failed to send invite:', err.response?.data || err.message);
-      // Handle error (e.g., show an error message to the user)
+      console.error('Failed to send invites:', err);
+      Alert.alert('Error', 'Failed to send invitations. Please try again.');
+    }
+  };
+
+  const handleAcceptInvite = async (inviteId) => {
+    try {
+      await inviteService.acceptInvite(inviteId, global.currentUser.id);
+      const acceptedInvite = invites.find(invite => invite.id === inviteId);
+      setFriends([...friends, acceptedInvite]);
+      setInvites(invites.filter(invite => invite.id !== inviteId));
+      setUsers(users.filter(user => user.id !== acceptedInvite.user_id));
+    } catch (err) {
+      console.error('Failed to accept invite:', err);
+      Alert.alert('Error', 'Failed to accept invitation. Please try again.');
+    }
+  };
+
+  const handleRejectInvite = async (inviteId) => {
+    try {
+      await inviteService.rejectInvite(inviteId, global.currentUser.id);
+      Alert.alert('Success', 'Invitation rejected');
+      fetchData(); // Refresh the data
+    } catch (err) {
+      console.error('Failed to reject invite:', err);
+      Alert.alert('Error', 'Failed to reject invitation. Please try again.');
     }
   };
 
   const toggleUserSelection = (userId) => {
     setSelectedUsers(prev =>
-      prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
+      prev.includes(userId)
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
     );
   };
 
+  const renderFriend = ({ item }) => <FriendCard name={item.name} />;
+  
   const renderInvite = ({ item }) => (
     <InviteCard
       name={item.name}
@@ -76,12 +125,8 @@ const FriendsScreen = () => {
     />
   );
 
-  const inviteFriends = () => {
-    selectedUsers.forEach(handleInvite);
-  };
-
   if (loading) {
-    return <ActivityIndicator size="large" color="#FFA500" />;
+    return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   if (error) {
@@ -93,7 +138,20 @@ const FriendsScreen = () => {
       <ScrollView style={styles.container}>
         <Text style={styles.title}>My Circle</Text>
         
-        <View style={[styles.section, styles.invitesSection]}>
+        {friends.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Friends</Text>
+            <FlatList
+              data={friends}
+              renderItem={renderFriend}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+        )}
+        
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Invites</Text>
           {invites.length > 0 ? (
             <FlatList
@@ -107,8 +165,8 @@ const FriendsScreen = () => {
           )}
         </View>
         
-        <View style={[styles.section, styles.inviteFriendsSection]}>
-          <Text style={styles.sectionTitle}>Invite Friends to be Your Accountability Buddy</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Invite Friends</Text>
           <FlatList
             data={users}
             renderItem={renderUser}
@@ -116,15 +174,15 @@ const FriendsScreen = () => {
             scrollEnabled={false}
           />
         </View>
-        
-        <TouchableOpacity 
-          style={[styles.inviteButton, selectedUsers.length === 0 && styles.disabledButton]} 
-          onPress={inviteFriends}
-          disabled={selectedUsers.length === 0}
-        >
-          <Text style={styles.inviteButtonText}>Invite Friends</Text>
-        </TouchableOpacity>
       </ScrollView>
+      
+      {selectedUsers.length > 0 && (
+        <TouchableOpacity style={styles.sendInvitationButton} onPress={handleInvite}>
+          <Text style={styles.sendInvitationButtonText}>
+            Send Invitation ({selectedUsers.length})
+          </Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };
@@ -147,13 +205,6 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 20,
   },
-  invitesSection: {
-    flex: 1, // Takes up 1/3 of the screen
-    marginBottom: 40, // Add extra space below the Invites section
-  },
-  inviteFriendsSection: {
-    flex: 2, // Takes up 2/3 of the screen
-  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -166,20 +217,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
-  inviteButton: {
-    backgroundColor: '#FFE0B2', // Lighter shade of orange
+  sendInvitationButton: {
+    backgroundColor: '#FFA500',
     padding: 15,
-    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
-  inviteButtonText: {
-    color: '#FFA500', // Orange text
+  sendInvitationButtonText: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  disabledButton: {
-    opacity: 0.5,
   },
   errorText: {
     fontSize: 16,
