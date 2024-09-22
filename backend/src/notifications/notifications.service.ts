@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Pusher from 'pusher';
+import { NotificationEvent } from 'types/notification-event';
 
 @Injectable()
 export class NotificationService {
@@ -16,7 +17,7 @@ export class NotificationService {
     });
   }
 
-  async sendNotification(channel: string, event: string, data: any) {
+  async sendNotification(channel: string, event: NotificationEvent, data: any) {
     await this.pusher.trigger(channel, event, data);
   }
 }
