@@ -11,10 +11,10 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		2F6E09C3D2B273DC4AB72C88 /* libPods-FocusbearHackathon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FA49C14FEB9FCDE0150BA3 /* libPods-FocusbearHackathon.a */; };
 		3735673C594399B22E2E258D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EC6AD08E812D55EBF233DF81 /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		BEB880464184D99ED1F26844 /* libPods-FocusbearHackathon-FocusbearHackathonTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1B35AA8AEDCE6F96ECBEE9 /* libPods-FocusbearHackathon-FocusbearHackathonTests.a */; };
-		C841CE09E0FBF815CAA17627 /* libPods-FocusbearHackathon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 48DE916CAAEEEB33FB403664 /* libPods-FocusbearHackathon.a */; };
+		D8889285FE81CE8857CA6F86 /* libPods-FocusbearHackathon-FocusbearHackathonTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 99F859ABA6FF60D550265D7F /* libPods-FocusbearHackathon-FocusbearHackathonTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,8 +31,6 @@
 		00E356EE1AD99517003FC87E /* FocusbearHackathonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FocusbearHackathonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* FocusbearHackathonTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FocusbearHackathonTests.m; sourceTree = "<group>"; };
-		09B091946E819F7B6A2B7229 /* Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig"; path = "Target Support Files/Pods-FocusbearHackathon-FocusbearHackathonTests/Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig"; sourceTree = "<group>"; };
-		0D56EBA92A48FD849FD8913E /* Pods-FocusbearHackathon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusbearHackathon.debug.xcconfig"; path = "Target Support Files/Pods-FocusbearHackathon/Pods-FocusbearHackathon.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* FocusbearHackathon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FocusbearHackathon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = FocusbearHackathon/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = FocusbearHackathon/AppDelegate.mm; sourceTree = "<group>"; };
@@ -40,13 +38,15 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FocusbearHackathon/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = FocusbearHackathon/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = FocusbearHackathon/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		48DE916CAAEEEB33FB403664 /* libPods-FocusbearHackathon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FocusbearHackathon.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6660295CFFCAF45AEAA54DAA /* Pods-FocusbearHackathon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusbearHackathon.release.xcconfig"; path = "Target Support Files/Pods-FocusbearHackathon/Pods-FocusbearHackathon.release.xcconfig"; sourceTree = "<group>"; };
+		6EF7ECA4CEE90BAFAD218EF4 /* Pods-FocusbearHackathon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusbearHackathon.debug.xcconfig"; path = "Target Support Files/Pods-FocusbearHackathon/Pods-FocusbearHackathon.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FocusbearHackathon/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		A0729DE8E32DBEC6B95A3286 /* Pods-FocusbearHackathon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusbearHackathon.release.xcconfig"; path = "Target Support Files/Pods-FocusbearHackathon/Pods-FocusbearHackathon.release.xcconfig"; sourceTree = "<group>"; };
-		DF1B35AA8AEDCE6F96ECBEE9 /* libPods-FocusbearHackathon-FocusbearHackathonTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FocusbearHackathon-FocusbearHackathonTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		95D2FF1D93E95AEC5F983A15 /* Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig"; path = "Target Support Files/Pods-FocusbearHackathon-FocusbearHackathonTests/Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig"; sourceTree = "<group>"; };
+		99F859ABA6FF60D550265D7F /* libPods-FocusbearHackathon-FocusbearHackathonTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FocusbearHackathon-FocusbearHackathonTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D890974FEC75C4EE016B1F54 /* Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig"; path = "Target Support Files/Pods-FocusbearHackathon-FocusbearHackathonTests/Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EC6AD08E812D55EBF233DF81 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = FocusbearHackathon/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		ECD87F9A0405D8FEF8384188 /* Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig"; path = "Target Support Files/Pods-FocusbearHackathon-FocusbearHackathonTests/Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F7FA49C14FEB9FCDE0150BA3 /* libPods-FocusbearHackathon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FocusbearHackathon.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,7 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BEB880464184D99ED1F26844 /* libPods-FocusbearHackathon-FocusbearHackathonTests.a in Frameworks */,
+				D8889285FE81CE8857CA6F86 /* libPods-FocusbearHackathon-FocusbearHackathonTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,7 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C841CE09E0FBF815CAA17627 /* libPods-FocusbearHackathon.a in Frameworks */,
+				2F6E09C3D2B273DC4AB72C88 /* libPods-FocusbearHackathon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,8 +105,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				48DE916CAAEEEB33FB403664 /* libPods-FocusbearHackathon.a */,
-				DF1B35AA8AEDCE6F96ECBEE9 /* libPods-FocusbearHackathon-FocusbearHackathonTests.a */,
+				F7FA49C14FEB9FCDE0150BA3 /* libPods-FocusbearHackathon.a */,
+				99F859ABA6FF60D550265D7F /* libPods-FocusbearHackathon-FocusbearHackathonTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -145,10 +145,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				0D56EBA92A48FD849FD8913E /* Pods-FocusbearHackathon.debug.xcconfig */,
-				A0729DE8E32DBEC6B95A3286 /* Pods-FocusbearHackathon.release.xcconfig */,
-				09B091946E819F7B6A2B7229 /* Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig */,
-				ECD87F9A0405D8FEF8384188 /* Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig */,
+				6EF7ECA4CEE90BAFAD218EF4 /* Pods-FocusbearHackathon.debug.xcconfig */,
+				6660295CFFCAF45AEAA54DAA /* Pods-FocusbearHackathon.release.xcconfig */,
+				D890974FEC75C4EE016B1F54 /* Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig */,
+				95D2FF1D93E95AEC5F983A15 /* Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -160,12 +160,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "FocusbearHackathonTests" */;
 			buildPhases = (
-				AF6D4A5684BD5D0C2255EE9E /* [CP] Check Pods Manifest.lock */,
+				8FF48A407B5856BE461557D1 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				EBACD4445B89E2C3CCF32B00 /* [CP] Embed Pods Frameworks */,
-				49B5CFD7BCF3071D903663F2 /* [CP] Copy Pods Resources */,
+				30A9E9F2703DE01670A58BD9 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -181,13 +180,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "FocusbearHackathon" */;
 			buildPhases = (
-				53ADC6A48BD06E48EA891328 /* [CP] Check Pods Manifest.lock */,
+				93C5FBEC695B00E096FB7A53 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				CA42A1128FE304671A04E20D /* [CP] Embed Pods Frameworks */,
-				9F27FD6443477AD1974E91CC /* [CP] Copy Pods Resources */,
+				3822A660E864F28C0CF002E0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -272,7 +270,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		49B5CFD7BCF3071D903663F2 /* [CP] Copy Pods Resources */ = {
+		30A9E9F2703DE01670A58BD9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -289,29 +287,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FocusbearHackathon-FocusbearHackathonTests/Pods-FocusbearHackathon-FocusbearHackathonTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		53ADC6A48BD06E48EA891328 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FocusbearHackathon-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9F27FD6443477AD1974E91CC /* [CP] Copy Pods Resources */ = {
+		3822A660E864F28C0CF002E0 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -328,7 +304,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FocusbearHackathon/Pods-FocusbearHackathon-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		AF6D4A5684BD5D0C2255EE9E /* [CP] Check Pods Manifest.lock */ = {
+		8FF48A407B5856BE461557D1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -350,38 +326,26 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		CA42A1128FE304671A04E20D /* [CP] Embed Pods Frameworks */ = {
+		93C5FBEC695B00E096FB7A53 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FocusbearHackathon/Pods-FocusbearHackathon-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FocusbearHackathon/Pods-FocusbearHackathon-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FocusbearHackathon-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FocusbearHackathon/Pods-FocusbearHackathon-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EBACD4445B89E2C3CCF32B00 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FocusbearHackathon-FocusbearHackathonTests/Pods-FocusbearHackathon-FocusbearHackathonTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FocusbearHackathon-FocusbearHackathonTests/Pods-FocusbearHackathon-FocusbearHackathonTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FocusbearHackathon-FocusbearHackathonTests/Pods-FocusbearHackathon-FocusbearHackathonTests-frameworks.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -417,7 +381,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 09B091946E819F7B6A2B7229 /* Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig */;
+			baseConfigurationReference = D890974FEC75C4EE016B1F54 /* Pods-FocusbearHackathon-FocusbearHackathonTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -444,7 +408,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ECD87F9A0405D8FEF8384188 /* Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig */;
+			baseConfigurationReference = 95D2FF1D93E95AEC5F983A15 /* Pods-FocusbearHackathon-FocusbearHackathonTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -468,7 +432,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0D56EBA92A48FD849FD8913E /* Pods-FocusbearHackathon.debug.xcconfig */;
+			baseConfigurationReference = 6EF7ECA4CEE90BAFAD218EF4 /* Pods-FocusbearHackathon.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -495,7 +459,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A0729DE8E32DBEC6B95A3286 /* Pods-FocusbearHackathon.release.xcconfig */;
+			baseConfigurationReference = 6660295CFFCAF45AEAA54DAA /* Pods-FocusbearHackathon.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -599,7 +563,7 @@
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
-				USE_HERMES = true;
+				USE_HERMES = false;
 			};
 			name = Debug;
 		};
@@ -675,7 +639,7 @@
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
-				USE_HERMES = true;
+				USE_HERMES = false;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
