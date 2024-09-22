@@ -44,7 +44,7 @@ const FriendsScreen = () => {
       setUsers(potentialFriends);
     } catch (err) {
       setError('Failed to fetch data. Please try again.');
-      console.error('Error fetching data:', err.message || err);
+      console.error('Error fetching data:', err);
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,8 @@ const FriendsScreen = () => {
   const handleRejectInvite = async (inviteId) => {
     try {
       await inviteService.rejectInvite(inviteId, global.currentUser.id);
-      setInvites(invites.filter(invite => invite.id !== inviteId));
+      Alert.alert('Success', 'Invitation rejected');
+      fetchData(); // Refresh the data
     } catch (err) {
       console.error('Failed to reject invite:', err);
       Alert.alert('Error', 'Failed to reject invitation. Please try again.');
