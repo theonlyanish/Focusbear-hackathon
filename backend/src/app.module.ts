@@ -1,10 +1,17 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { UserModule } from './user/user.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { UnlockRequestModule } from './unlock-request/unlock-request.module';
 import { FriendModule } from './friend/friend.module';
 import { InviteModule } from './invite/invite.module';
-import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [PrismaModule, InviteModule, FriendModule, UserModule],
+  imports: [
+    UserModule,
+    FriendModule,
+    InviteModule,
+    PrismaModule,
+    UnlockRequestModule,
+  ],
 })
 export class AppModule {}

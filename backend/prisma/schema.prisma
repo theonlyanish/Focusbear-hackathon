@@ -3,42 +3,70 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
-  email         String        @unique
-  name          String
-  friendsAsUser Friend[]      @relation("UserFriends")
-  friendsAsFriend Friend[]    @relation("FriendFriends")
-  invitations   Invitation[]  @relation("UserInvitations")
-  receivedInvitations Invitation[] @relation("FriendInvitations")
+  id                  Int             @id @default(autoincrement())
+  email               String          @unique
+  name                String
+  friendsAsUser       Friend[]        @relation("UserFriends")
+  friendsAsFriend     Friend[]        @relation("FriendFriends")
+  invitations         Invitation[]    @relation("UserInvitations")
+  receivedInvitations Invitation[]    @relation("FriendInvitations")
+  unlockRequests      UnlockRequest[] @relation("UserUnlockRequests")
+
+  // New relation field to hold UnlockResponses
+  unlockResponses UnlockResponse[] // One user can have multiple unlock responses
 }
 
 model Friend {
   user_id       Int
   friend_id     Int
   invitation_id Int
-  added_at      DateTime     @default(now())
-  
-  user          User         @relation("UserFriends", fields: [user_id], references: [id], onDelete: Cascade)
-  friend        User         @relation("FriendFriends", fields: [friend_id], references: [id], onDelete: Cascade)
-  invitation    Invitation   @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
+  added_at      DateTime @default(now())
+
+  user       User       @relation("UserFriends", fields: [user_id], references: [id], onDelete: Cascade)
+  friend     User       @relation("FriendFriends", fields: [friend_id], references: [id], onDelete: Cascade)
+  invitation Invitation @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
 
   @@id([user_id, friend_id])
 }
 
 model Invitation {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  friend_id Int
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+
+  user   User     @relation("UserInvitations", fields: [user_id], references: [id], onDelete: Cascade)
+  friend User     @relation("FriendInvitations", fields: [friend_id], references: [id], onDelete: Cascade)
+  Friend Friend[]
+}
+
+model UnlockRequest {
   id         Int      @id @default(autoincrement())
   user_id    Int
-  friend_id  Int
-  status     String   @default("pending")
+  reason     String
+  timePeriod Int
+  status     String   @default("pending") // pending, accepted, rejected
   createdAt  DateTime @default(now())
 
-  user       User     @relation("UserInvitations", fields: [user_id], references: [id], onDelete: Cascade)
-  friend     User     @relation("FriendInvitations", fields: [friend_id], references: [id], onDelete: Cascade)
-  Friend     Friend[]
+  user      User             @relation("UserUnlockRequests", fields: [user_id], references: [id], onDelete: Cascade)
+  responses UnlockResponse[] // Store individual responses from friends
+}
+
+model UnlockResponse {
+  id              Int    @id @default(autoincrement())
+  unlockRequestId Int
+  friend_id       Int
+  response        String @default("pending") // pending, accepted, rejected
+
+  unlockRequest UnlockRequest @relation(fields: [unlockRequestId], references: [id], onDelete: Cascade)
+  friend        User          @relation(fields: [friend_id], references: [id], onDelete: Cascade)
+
+  @@unique([unlockRequestId, friend_id]) // Ensure a friend can only respond once to a specific unlock request
 }
