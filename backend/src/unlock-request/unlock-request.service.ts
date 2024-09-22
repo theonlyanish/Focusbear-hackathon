@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from 'src/notifications/notifications.service';
 
@@ -22,18 +22,43 @@ export class UnlockRequestService {
     if (!user) {
       throw new Error('User not found');
     }
-
-    const unlockRequest = await this.prisma.unlockRequest.create({
-      data: {
+    // check if request has been made before with the same reason and time period within 5 hours
+    const existingRequest = await this.prisma.unlockRequest.findFirst({
+      where: {
         user_id: userId,
         reason,
         timePeriod,
-        responses: {
-          create: user.friendsAsUser.map((friend) => ({
-            friend_id: friend.friend_id, // create default responses from user friends
-          })),
+        createdAt: {
+          gte: new Date(Date.now() - 5 * 60 * 60 * 1000),
         },
       },
+    });
+
+    if (existingRequest) {
+      throw new BadRequestException(
+        'A similar unlock request has already been made within the last 5 hours',
+      );
+    }
+
+    const unlockRequest = await this.prisma.$transaction(async (prisma) => {
+      //transaction to make sure it runs & fails together as one transaction
+      const request = await prisma.unlockRequest.create({
+        data: {
+          user_id: userId,
+          reason,
+          timePeriod,
+        },
+      });
+
+      console.log('request created', request);
+      return request;
+    });
+
+    await this.prisma.unlockResponse.createMany({
+      data: user.friendsAsUser.map((friend) => ({
+        unlockRequestId: unlockRequest.id,
+        friend_id: friend.friend_id,
+      })),
     });
 
     return unlockRequest;
