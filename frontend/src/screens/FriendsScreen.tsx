@@ -88,7 +88,7 @@ const FriendsScreen = () => {
         updatedFriends.push(invitedFriend);
         updatedPotentialFriends.splice(updatedPotentialFriends.findIndex(friend => friend.id === id), 1);
         setBannerMessage(`${invitedFriend.name} accepted your invite!`);
-      } else {
+      } else {cd 
         // Reject invite
         setBannerMessage(`${invitedFriend.name} declined your invite.`);
       }
