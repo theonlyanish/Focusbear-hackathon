@@ -24,19 +24,19 @@ export class InviteController {
     @Body('userId') userId: number,
     @Body('friendId') friendId: number,
   ): Promise<void> {
-    await this.inviteService.createInvite(userId, friendId);
+    await this.inviteService.createInvite(userId, friendId); // and send notification
   }
 
   @Post(':inviteId/accept')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Accept an invitation' })
-  @ApiParam({ name: 'inviteId', type: 'number' })
+  @ApiParam({ name: 'inviteId', type: 'string' })
   @ApiBody({ schema: { example: { userId: 1 } } })
   async acceptInvite(
-    @Body('userId') userId: number,
-    @Param('inviteId') inviteId: number,
+    @Body('userId') userId: string,
+    @Param('inviteId') inviteId: string,
   ): Promise<void> {
-    await this.inviteService.acceptInvite(userId, inviteId);
+    await this.inviteService.acceptInvite(userId, inviteId); // and send notification back to the user who sent the invite
   }
 
   @Get(':userId')
