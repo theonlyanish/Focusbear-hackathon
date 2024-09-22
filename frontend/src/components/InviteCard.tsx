@@ -4,9 +4,11 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 interface InviteCardProps {
   name: string;
   email: string;
+  onAccept: () => void;
+  onReject: () => void;
 }
 
-const InviteCard: React.FC<InviteCardProps> = ({ name, email }) => {
+const InviteCard: React.FC<InviteCardProps> = ({ name, email, onAccept, onReject }) => {
     return (
       <View style={styles.card}>
         <View style={styles.info}>
@@ -14,10 +16,10 @@ const InviteCard: React.FC<InviteCardProps> = ({ name, email }) => {
           <Text style={styles.email}>{email}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.acceptButton]}>
+          <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={onAccept}>
             <Text style={styles.buttonText}>Accept</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.declineButton]}>
+          <TouchableOpacity style={[styles.button, styles.declineButton]} onPress={onReject}>
             <Text style={styles.buttonText}>Decline</Text>
           </TouchableOpacity>
         </View>

@@ -1,132 +1,103 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
 import FriendCard from '../components/FriendCard';
 import InviteCard from '../components/InviteCard';
 import InviteFriendCard from '../components/InviteFriendCard';
-import Banner from '../components/Banner';
-
-// Mock data (replace with actual data fetching logic)
-const mockFriends = [
-  { id: '1', name: 'John Doe' },
-  { id: '2', name: 'Jane Smith' },
-];
-
-const mockInvites = [
-  { id: '1', name: 'Alice Johnson', email: 'alice@example.com' },
-  { id: '2', name: 'Bob Smith', email: 'bob@example.com' },
-];
-
-const mockPotentialFriends = [
-  { id: '1', name: 'Charlie Brown', email: 'charlie@example.com' },
-  { id: '2', name: 'Diana Prince', email: 'diana@example.com' },
-  { id: '3', name: 'Ethan Hunt', email: 'ethan@example.com' },
-];
-
-// Add this type definition
-type Friend = string; // or a more complex type if needed
+import { inviteService, userService } from '../services/api';
 
 const FriendsScreen = () => {
-  const [friends, setFriends] = useState(mockFriends);
-  const [invites, setInvites] = useState(mockInvites);
-  const [potentialFriends, setPotentialFriends] = useState(mockPotentialFriends);
-  const [selectedFriends, setSelectedFriends] = useState<Friend[]>([]);
-  const [showBanner, setShowBanner] = useState(false);
-  const [bannerMessage, setBannerMessage] = useState('');
-  const [pendingInvites, setPendingInvites] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState([]);
+  const [invites, setInvites] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (showBanner) {
-      const timer = setTimeout(() => setShowBanner(false), 3000);
-      return () => clearTimeout(timer);
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [friendsData, invitesData, usersData] = await Promise.all([
+        inviteService.getInvites(1), // Replace 1 with the actual user ID
+        inviteService.getInvites(1), // Replace 1 with the actual user ID
+        userService.getUsers(),
+      ]);
+      setFriends(friendsData);
+      setInvites(invitesData);
+      setUsers(usersData);
+    } catch (err) {
+      setError('Failed to fetch data. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  }, [showBanner]);
+  };
 
-  useEffect(() => {
-    // Mock behavior: Simulate invite responses after 5 seconds
-    const timer = setTimeout(mockInviteResponses, 5000);
-    return () => clearTimeout(timer);
-  }, [pendingInvites]);
+  const handleInvite = async (userId) => {
+    try {
+      await inviteService.sendInvite(1, userId); // Replace 1 with the actual user ID
+      // Update the UI to reflect the sent invite
+      setUsers(users.filter(user => user.id !== userId));
+      setSelectedUsers(selectedUsers.filter(id => id !== userId));
+    } catch (err) {
+      console.error('Failed to send invite:', err);
+      // Handle error (e.g., show an error message to the user)
+    }
+  };
 
-  const renderFriend = ({ item }) => <FriendCard name={item.name} />;
-  const renderInvite = ({ item }) => <InviteCard name={item.name} email={item.email} />;
-  const renderPotentialFriend = ({ item }) => (
-    <InviteFriendCard
+  const toggleUserSelection = (userId) => {
+    setSelectedUsers(prev =>
+      prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
+    );
+  };
+
+  const renderInvite = ({ item }) => (
+    <InviteCard
       name={item.name}
       email={item.email}
-      isSelected={selectedFriends.includes(item.id)}
-      isPending={pendingInvites.includes(item.id)}
-      onSelect={() => toggleFriendSelection(item.id)}
+      onAccept={() => handleAcceptInvite(item.id)}
+      onReject={() => handleRejectInvite(item.id)}
     />
   );
 
-  const toggleFriendSelection = (id) => {
-    if (!pendingInvites.includes(id)) {
-      setSelectedFriends(prev => 
-        prev.includes(id) ? prev.filter(fId => fId !== id) : [...prev, id]
-      );
-    }
-  };
+  const renderUser = ({ item }) => (
+    <InviteFriendCard
+      name={item.name}
+      email={item.email}
+      isSelected={selectedUsers.includes(item.id)}
+      isPending={false}
+      onSelect={() => toggleUserSelection(item.id)}
+    />
+  );
 
   const inviteFriends = () => {
-    setPendingInvites([...pendingInvites, ...selectedFriends]);
-    setSelectedFriends([]);
-    setBannerMessage("Invites sent successfully!");
-    setShowBanner(true);
+    selectedUsers.forEach(handleInvite);
   };
 
-  const mockInviteResponses = () => {
-    const updatedPotentialFriends = [...potentialFriends];
-    const updatedFriends = [...friends];
-    const updatedPendingInvites = [...pendingInvites];
+  if (loading) {
+    return <ActivityIndicator size="large" color="#FFA500" />;
+  }
 
-    pendingInvites.forEach(id => {
-      const randomResponse = Math.random() < 0.5; // 50% chance of acceptance
-      const invitedFriend = potentialFriends.find(friend => friend.id === id);
-
-      if (randomResponse) {
-        // Accept invite
-        updatedFriends.push(invitedFriend);
-        updatedPotentialFriends.splice(updatedPotentialFriends.findIndex(friend => friend.id === id), 1);
-        setBannerMessage(`${invitedFriend.name} accepted your invite!`);
-      } else {cd 
-        // Reject invite
-        setBannerMessage(`${invitedFriend.name} declined your invite.`);
-      }
-
-      updatedPendingInvites.splice(updatedPendingInvites.indexOf(id), 1);
-    });
-
-    setFriends(updatedFriends);
-    setPotentialFriends(updatedPotentialFriends);
-    setPendingInvites(updatedPendingInvites);
-    setShowBanner(true);
-  };
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
         <Text style={styles.title}>My Circle</Text>
         
-        {friends.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Friends</Text>
-            <FlatList
-              data={friends}
-              renderItem={renderFriend}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-        )}
-        
-        <View style={styles.section}>
+        <View style={[styles.section, styles.invitesSection]}>
           <Text style={styles.sectionTitle}>Invites</Text>
           {invites.length > 0 ? (
             <FlatList
               data={invites}
               renderItem={renderInvite}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.id.toString()}
               scrollEnabled={false}
             />
           ) : (
@@ -134,46 +105,58 @@ const FriendsScreen = () => {
           )}
         </View>
         
-        <View style={styles.section}>
+        <View style={[styles.section, styles.inviteFriendsSection]}>
           <Text style={styles.sectionTitle}>Invite Friends to be Your Accountability Buddy</Text>
           <FlatList
-            data={potentialFriends}
-            renderItem={renderPotentialFriend}
-            keyExtractor={(item) => item.id}
+            data={users}
+            renderItem={renderUser}
+            keyExtractor={(item) => item.id.toString()}
             scrollEnabled={false}
           />
         </View>
         
         <TouchableOpacity 
-          style={[styles.inviteButton, selectedFriends.length === 0 && styles.disabledButton]} 
+          style={[styles.inviteButton, selectedUsers.length === 0 && styles.disabledButton]} 
           onPress={inviteFriends}
-          disabled={selectedFriends.length === 0}
+          disabled={selectedUsers.length === 0}
         >
           <Text style={styles.inviteButtonText}>Invite Friends</Text>
         </TouchableOpacity>
       </ScrollView>
-      {showBanner && <Banner message={bannerMessage} />}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#FFA500',
   },
   section: {
     marginBottom: 20,
+  },
+  invitesSection: {
+    flex: 1, // Takes up 1/3 of the screen
+    marginBottom: 40, // Add extra space below the Invites section
+  },
+  inviteFriendsSection: {
+    flex: 2, // Takes up 2/3 of the screen
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#FFA500',
   },
   noItemsText: {
     fontSize: 16,
@@ -182,19 +165,25 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   inviteButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#FFE0B2', // Lighter shade of orange
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
   },
   inviteButtonText: {
-    color: '#fff',
+    color: '#FFA500', // Orange text
     fontSize: 18,
     fontWeight: 'bold',
   },
   disabledButton: {
-    backgroundColor: '#ccc',
+    opacity: 0.5,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#FF6347',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 
