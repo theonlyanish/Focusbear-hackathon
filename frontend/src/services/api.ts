@@ -53,15 +53,15 @@ export const userService = {
 
 export const unlockService = {
   sendUnlockRequest: async (userId: number, reason: string, timePeriod: number) => {
-    const response = await api.post('/unlock-requests', { userId, reason, timePeriod });
+    const response = await api.post('/unlocks', { userId, reason, timePeriod });
     return response.data;
   },
   getUnlockRequestsForFriend: async (friendId: number) => {
-    const response = await api.get(`/unlock-requests/friend/${friendId}`);
+    const response = await api.get(`/unlock-requests/requests/${friendId}`);
     return response.data;
   },
   respondToUnlockRequest: async (unlockRequestId: number, friendId: number, response: 'accepted' | 'rejected') => {
-    const apiResponse = await api.post(`/unlock-requests/${unlockRequestId}/respond`, { friendId, response });
+    const apiResponse = await api.post(`/unlock-requests/${unlockRequestId}/${response}`, { friendId });
     return apiResponse.data;
   },
 };
