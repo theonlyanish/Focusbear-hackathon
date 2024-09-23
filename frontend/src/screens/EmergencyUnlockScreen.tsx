@@ -2,19 +2,50 @@ import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation'; // You might need to create this file if it doesn't exist
 import api from '../services/api';
+import { formatTime } from '../utils/timeUtils';
+import { UnlockRequest } from '../types/unlockRequest';
 
 const EmergencyUnlockScreen = () => {
   const [reason, setReason] = useState('');
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
-  const navigation = useNavigation();
+  const [timer, setTimer] = useState(0);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
     navigation.setOptions({
       headerTitle: '',
     });
+    checkAcceptedRequests();
   }, [navigation]);
+
+  const checkAcceptedRequests = async () => {
+    try {
+      const response = await api.get(`/unlocks/requests/${global.currentUser.id}`);
+      const acceptedRequest = response.data.find((req: UnlockRequest) => req.status === 'accepted');
+      if (acceptedRequest) {
+        startTimer(acceptedRequest.timePeriod);
+      }
+    } catch (error) {
+      console.error('Error checking accepted requests:', error);
+    }
+  };
+
+  const startTimer = (duration: number) => {
+    setTimer(duration);
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer <= 0) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+  };
 
   const handleRequest = async () => {
     const timePeriod = hours * 3600 + minutes * 60; // Convert to seconds
@@ -35,49 +66,55 @@ const EmergencyUnlockScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.title}>Emergency Unlock Request</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Reason for unlock"
-          value={reason}
-          onChangeText={setReason}
-          multiline
-          numberOfLines={2}
-        />
-        <Text style={styles.durationLabel}>Duration:</Text>
-        <View style={styles.pickerContainer}>
-          <View style={styles.pickerWrapper}>
-            <View style={styles.pickerBackground}>
-              <Picker
-                selectedValue={hours}
-                onValueChange={(itemValue) => setHours(itemValue)}
-                style={styles.picker}
-              >
-                {[...Array(5)].map((_, i) => (
-                  <Picker.Item key={i} label={i.toString().padStart(2, '0')} value={i} />
-                ))}
-              </Picker>
+        {timer > 0 ? (
+          <Text style={styles.timerText}>Time remaining: {formatTime(timer)}</Text>
+        ) : (
+          <>
+            <Text style={styles.title}>Emergency Unlock Request</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Reason for unlock"
+              value={reason}
+              onChangeText={setReason}
+              multiline
+              numberOfLines={2}
+            />
+            <Text style={styles.durationLabel}>Duration:</Text>
+            <View style={styles.pickerContainer}>
+              <View style={styles.pickerWrapper}>
+                <View style={styles.pickerBackground}>
+                  <Picker
+                    selectedValue={hours}
+                    onValueChange={(itemValue) => setHours(itemValue)}
+                    style={styles.picker}
+                  >
+                    {[...Array(5)].map((_, i) => (
+                      <Picker.Item key={i} label={i.toString().padStart(2, '0')} value={i} />
+                    ))}
+                  </Picker>
+                </View>
+                <Text style={styles.pickerLabel}>Hours</Text>
+              </View>
+              <View style={styles.pickerWrapper}>
+                <View style={styles.pickerBackground}>
+                  <Picker
+                    selectedValue={minutes}
+                    onValueChange={(itemValue) => setMinutes(itemValue)}
+                    style={styles.picker}
+                  >
+                    {[...Array(60)].map((_, i) => (
+                      <Picker.Item key={i} label={i.toString().padStart(2, '0')} value={i} />
+                    ))}
+                  </Picker>
+                </View>
+                <Text style={styles.pickerLabel}>Minutes</Text>
+              </View>
             </View>
-            <Text style={styles.pickerLabel}>Hours</Text>
-          </View>
-          <View style={styles.pickerWrapper}>
-            <View style={styles.pickerBackground}>
-              <Picker
-                selectedValue={minutes}
-                onValueChange={(itemValue) => setMinutes(itemValue)}
-                style={styles.picker}
-              >
-                {[...Array(60)].map((_, i) => (
-                  <Picker.Item key={i} label={i.toString().padStart(2, '0')} value={i} />
-                ))}
-              </Picker>
-            </View>
-            <Text style={styles.pickerLabel}>Minutes</Text>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={handleRequest}>
-          <Text style={styles.buttonText}>Send Request</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleRequest}>
+              <Text style={styles.buttonText}>Send Request</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -144,6 +181,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  timerText: {
+    fontSize: 18,
+    marginBottom: 10,
   },
 });
 

@@ -5,8 +5,9 @@ import {
   HttpStatus,
   Post,
   Body,
+  Param,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from 'dto/user/create-user.dto';
 
@@ -33,5 +34,14 @@ export class UserController {
   @ApiOperation({ summary: 'Get list of all users' })
   async getAllUsers() {
     return this.userService.getAllUsers();
+  }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiParam({ name: 'id', type: 'number' })
+  async getUserById(@Param('id') id: string) {
+    const userId = parseInt(id, 10);
+    return this.userService.getUserById(userId);
   }
 }

@@ -1,31 +1,96 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
+import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { RootStackParamList } from '../types/navigation';
 import UnlockRequestCard from '../components/UnlockRequestCard';
-//import { YourRequestType } from '../types'; 
+import { UnlockRequest } from '../types/unlockRequest';
+import api from '../services/api';
 
-// Mock data for unlock requests 
-const mockUnlockRequests = [
-  { id: '1', name: 'John Doe', reason: 'Emergency call', duration: 3600 },
-  { id: '2', name: 'Jane Smith', reason: 'Work deadline', duration: 7200 },
-];
+interface Friend {
+  user_id: number;
+  friend_id: number;
+  friend: {
+    id: number;
+    email: string;
+    name: string;
+  };
+}
 
 const HomePage = () => {
-  const [unlockRequests, setUnlockRequests] = useState(mockUnlockRequests);
+  const [unlockRequests, setUnlockRequests] = useState<UnlockRequest[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const handleRequestPress = (request: YourRequestType) => {
+  const fetchFriends = useCallback(async () => {
+    try {
+      const response = await api.get(`/friends/${global.currentUser.id}`);
+      setFriends(response.data);
+    } catch (error) {
+      console.error('Error fetching friends:', error);
+      Alert.alert('Error', 'Failed to fetch friends. Please try again.');
+    }
+  }, []);
+
+  const fetchUnlockRequests = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/unlocks/requests/${global.currentUser.id}`);
+      const requests = response.data;
+      
+      console.log('Raw requests data:', requests);
+
+      const flattenedRequests = requests.map(item => {
+        console.log('Processing item:', item);
+        
+        return {
+          id: item.unlockRequest.id,
+          reason: item.unlockRequest.reason || 'No reason provided',
+          timePeriod: parseInt(item.unlockRequest.timePeriod, 10) || 0,
+          status: item.unlockRequest.status || 'Unknown',
+          user: {
+            name: item.unlockRequest.user.name || 'Unknown User'
+          }
+        };
+      });
+
+      console.log('Flattened requests:', flattenedRequests);
+      setUnlockRequests(flattenedRequests);
+    } catch (error) {
+      console.error('Error fetching unlock requests:', error);
+      Alert.alert('Error', 'Failed to fetch unlock requests. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchFriends();
+    }, [fetchFriends])
+  );
+
+  useEffect(() => {
+    if (friends.length > 0) {
+      fetchUnlockRequests();
+    }
+  }, [friends, fetchUnlockRequests]);
+
+  const handleRequestPress = (request: UnlockRequest) => {
     navigation.navigate('UnlockRequestDetail', { request });
   };
 
-  const renderUnlockRequest = ({ item }) => (
+  const renderUnlockRequest = ({ item }: { item: UnlockRequest }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() => handleRequestPress(item)}
     >
-      <Text style={styles.cardTitle}>{item.name}</Text>
-      <Text style={styles.cardSubtitle}>Tap to view details</Text>
+      <UnlockRequestCard
+        name={item.user?.name || 'Unknown User'}
+        reason={item.reason}
+        timePeriod={item.timePeriod}
+        status={item.status}
+      />
     </TouchableOpacity>
   );
 
@@ -39,12 +104,16 @@ const HomePage = () => {
         
         <View style={styles.feedContainer}>
           <Text style={styles.feedTitle}>Unlock Requests</Text>
-          {unlockRequests.length > 0 ? (
+          {loading ? (
+            <Text style={styles.loadingText}>Loading requests...</Text>
+          ) : unlockRequests.length > 0 ? (
             <FlatList
               data={unlockRequests}
               renderItem={renderUnlockRequest}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.id.toString()}
               style={styles.feedList}
+              refreshing={loading}
+              onRefresh={fetchUnlockRequests}
             />
           ) : (
             <Text style={styles.noRequestsText}>No new requests</Text>

@@ -1,14 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { NotificationService } from 'src/notifications/notifications.service';
+import { NotificationService } from '../notifications/notifications.service';
 import { Friend, UnlockRequest, User } from '@prisma/client';
+import { LockStatus } from '@prisma/client';
 
 @Injectable()
 export class UnlockRequestService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly notificationService: NotificationService,
-  ) {}
+  constructor(private readonly notificationService: NotificationService, private prisma: PrismaService) {}
 
   async createUnlockRequest(
     userId: number,
@@ -75,7 +73,19 @@ export class UnlockRequestService {
   async getUnlockRequestsForFriend(friendId: number) {
     return this.prisma.unlockResponse.findMany({
       where: { friend_id: friendId },
-      include: { unlockRequest: true },
+      include: {
+        unlockRequest: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }
+      },
     });
   }
 
@@ -100,6 +110,53 @@ export class UnlockRequestService {
     }
   }
 
+  async getLockStatus(userId: number) {
+    let lockStatus = await this.prisma.lockStatus.findUnique({
+      where: { userId },
+    });
+
+    if (!lockStatus) {
+      // If no lock status exists, create one with default values
+      lockStatus = await this.prisma.lockStatus.create({
+        data: { userId, isLocked: true },
+      });
+    }
+
+    const currentTime = new Date();
+
+    if (!lockStatus.isLocked && lockStatus.unlockedUntil) {
+      if (currentTime > lockStatus.unlockedUntil) {
+        // Lock period has ended, update status
+        lockStatus = await this.prisma.lockStatus.update({
+          where: { userId },
+          data: { isLocked: true, unlockedUntil: null },
+        });
+      }
+    }
+
+    return {
+      isLocked: lockStatus.isLocked,
+      remainingTime: lockStatus.unlockedUntil && !lockStatus.isLocked
+        ? Math.max(0, Math.floor((lockStatus.unlockedUntil.getTime() - currentTime.getTime()) / 1000))
+        : 0,
+    };
+  }
+
+  async updateLockStatus(userId: number, isLocked: boolean, unlockedUntil?: Date) {
+    try {
+      const updatedLockStatus = await this.prisma.lockStatus.upsert({
+        where: { userId },
+        update: { isLocked, unlockedUntil },
+        create: { userId, isLocked, unlockedUntil },
+      });
+      console.log('Lock status updated successfully:', updatedLockStatus);
+      return updatedLockStatus;
+    } catch (error) {
+      console.error('Error updating lock status:', error);
+      throw new Error('Failed to update lock status');
+    }
+  }
+
   async respondToUnlockRequest(
     unlockRequestId: number,
     friendId: number,
@@ -120,10 +177,12 @@ export class UnlockRequestService {
     const allResponses = await this.prisma.unlockResponse.findMany({
       where: { unlockRequestId },
     });
+
     // check if all responses are accepted
     const allAccepted = allResponses.every((r) => r.response === 'accepted');
     const anyRejected = allResponses.some((r) => r.response === 'rejected');
 
+    // send notification to the user who made the request
     let newStatus: 'accepted' | 'rejected' | 'pending' = 'pending';
     if (allAccepted) {
       newStatus = 'accepted';
@@ -131,8 +190,7 @@ export class UnlockRequestService {
       newStatus = 'rejected';
     }
 
-    // update the unlock request status
-    await this.prisma.unlockRequest.update({
+    const updatedUnlockRequest = await this.prisma.unlockRequest.update({
       where: { id: unlockRequestId },
       data: { status: newStatus },
     });
@@ -142,7 +200,6 @@ export class UnlockRequestService {
       where: { id: unlockRequestId },
       include: { user: true },
     });
-
     const user = unlockRequest.user;
 
     // get the friend who get the request
@@ -166,6 +223,12 @@ export class UnlockRequestService {
         } your unlock request`,
       },
     );
+
+    if (newStatus === 'accepted') {
+      const currentTime = new Date();
+      const unlockedUntil = new Date(currentTime.getTime() + updatedUnlockRequest.timePeriod * 1000);
+      await this.updateLockStatus(updatedUnlockRequest.user_id, false, unlockedUntil);
+    }
 
     return newStatus;
   }

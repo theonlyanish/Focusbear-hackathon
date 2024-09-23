@@ -17,9 +17,8 @@ model User {
   invitations         Invitation[]    @relation("UserInvitations")
   receivedInvitations Invitation[]    @relation("FriendInvitations")
   unlockRequests      UnlockRequest[] @relation("UserUnlockRequests")
-
-  // New relation field to hold UnlockResponses
-  unlockResponses UnlockResponse[] // One user can have multiple unlock responses
+  unlockResponses     UnlockResponse[]
+  lockStatus          LockStatus?     // One-to-one relation with LockStatus
 }
 
 model Friend {
@@ -69,4 +68,12 @@ model UnlockResponse {
   friend        User          @relation(fields: [friend_id], references: [id], onDelete: Cascade)
 
   @@unique([unlockRequestId, friend_id]) // Ensure a friend can only respond once to a specific unlock request
+}
+
+model LockStatus {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  isLocked      Boolean  @default(true)
+  unlockedUntil DateTime?
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

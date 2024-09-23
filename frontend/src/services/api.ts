@@ -48,8 +48,12 @@ export const friendService = {
 };
 
 export const lockService = {
-  getLockStatus: async () => {
-    const response = await api.get('/lock-status');
+  getLockStatus: async (userId: number) => {
+    const response = await api.get(`/unlocks/lock-status/${userId}`);
+    return response.data;
+  },
+  updateLockStatus: async (userId: number, isLocked: boolean, unlockedUntil?: Date) => {
+    const response = await api.post(`/unlocks/lock-status/${userId}`, { isLocked, unlockedUntil });
     return response.data;
   },
 };

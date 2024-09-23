@@ -54,6 +54,35 @@ export class UnlockRequestController {
     );
   }
 
+  @Get('lock-status/:userId')
+  @ApiOperation({ summary: 'Get lock status for a user' })
+  @ApiParam({ name: 'userId', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Returns the lock status and remaining time if unlocked' })
+  async getLockStatus(@Param('userId') userId: string) {
+    return this.unlockRequestService.getLockStatus(parseInt(userId, 10));
+  }
+
+  @Post('lock-status/:userId')
+  @ApiOperation({ summary: 'Update lock status for a user' })
+  @ApiParam({ name: 'userId', type: 'number' })
+  @ApiBody({ 
+    schema: { 
+      type: 'object', 
+      properties: { 
+        isLocked: { type: 'boolean' },
+        unlockedUntil: { type: 'string', format: 'date-time', nullable: true }
+      } 
+    } 
+  })
+  @ApiResponse({ status: 200, description: 'Lock status updated successfully' })
+  async updateLockStatus(
+    @Param('userId') userId: string,
+    @Body() body: { isLocked: boolean, unlockedUntil?: string }
+  ) {
+    const unlockedUntil = body.unlockedUntil ? new Date(body.unlockedUntil) : undefined;
+    return this.unlockRequestService.updateLockStatus(parseInt(userId, 10), body.isLocked, unlockedUntil);
+  }
+
   @Post(':unlockRequestId/accept')
   @ApiOperation({ summary: 'Accept an unlock request' })
   @ApiParam({ name: 'unlockRequestId', type: 'string' })

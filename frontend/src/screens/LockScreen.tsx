@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { lockService } from '../services/api';
 import api from '../services/api';
 
 type RouteParams = {
@@ -23,16 +24,19 @@ const LockScreen = () => {
   useEffect(() => {
     const fetchLockStatus = async () => {
       try {
-        const response = await api.get('/lock-status');
-        setIsLocked(response.data.isLocked);
-        setRemainingTime(response.data.remainingTime || 0);
+        const response = await lockService.getLockStatus(global.currentUser.id);
+        setIsLocked(response.isLocked);
+        if (!response.isLocked) {
+          setRemainingTime(response.remainingTime);
+        }
+        const status = await lockService.getLockStatus(global.currentUser.id);
       } catch (error) {
         console.error('Error fetching lock status:', error);
       }
     };
 
     fetchLockStatus();
-  }, []);
+   }, []);
 
   useEffect(() => {
     if (route.params?.pendingRequest) {
@@ -48,6 +52,7 @@ const LockScreen = () => {
           if (prevTime <= 1) {
             clearInterval(timer);
             setIsLocked(true);
+            updateLockStatus(true);
             return 0;
           }
           return prevTime - 1;
@@ -68,6 +73,14 @@ const LockScreen = () => {
     return `${hours.toString().padStart(2, '0')}:${minutes
       .toString()
       .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const updateLockStatus = async (locked: boolean) => {
+    try {
+      await api.post(`/unlocks/update-lock-status/${global.currentUser.id}`, { isLocked: locked });
+    } catch (error) {
+      console.error('Error updating lock status:', error);
+    }
   };
 
   return (
