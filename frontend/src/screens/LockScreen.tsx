@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/Ionicons'; 
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation'; // Make sure this file exists
-import api from '../services/api'; // Import the API service
+import { RootStackParamList } from '../types/navigation';
+import api from '../services/api';
 
 type RouteParams = {
   pendingRequest?: {
     reason: string;
     duration: number;
   };
-};
-
-type RootStackParamList = {
-  LockScreen: RouteParams;
-  EmergencyUnlock: undefined;
 };
 
 const LockScreen = () => {
@@ -26,10 +21,9 @@ const LockScreen = () => {
   const [pendingRequest, setPendingRequest] = useState<RouteParams['pendingRequest'] | null>(null);
 
   useEffect(() => {
-    // Fetch initial lock status from the API
     const fetchLockStatus = async () => {
       try {
-        const response = await api.get('/lock-status'); // Adjust the endpoint as needed
+        const response = await api.get('/lock-status');
         setIsLocked(response.data.isLocked);
         setRemainingTime(response.data.remainingTime || 0);
       } catch (error) {
@@ -39,6 +33,12 @@ const LockScreen = () => {
 
     fetchLockStatus();
   }, []);
+
+  useEffect(() => {
+    if (route.params?.pendingRequest) {
+      setPendingRequest(route.params.pendingRequest);
+    }
+  }, [route.params]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -61,15 +61,6 @@ const LockScreen = () => {
     navigation.navigate('EmergencyUnlock');
   };
 
-  // Mock function to simulate approval from the other side
-  const simulateApproval = () => {
-    if (pendingRequest) {
-      setIsLocked(false);
-      setRemainingTime(pendingRequest.duration);
-      setPendingRequest(null);
-    }
-  };
-
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -82,7 +73,7 @@ const LockScreen = () => {
   return (
     <View style={styles.container}>
       <Icon 
-        name={isLocked ? 'lock' : 'lock-open'} 
+        name={isLocked ? 'lock-closed' : 'lock-open'} 
         size={100} 
         color={isLocked ? '#4CAF50' : '#FFA500'} 
       />
@@ -112,13 +103,6 @@ const LockScreen = () => {
       )}
       {!isLocked && (
         <Text style={styles.unlockMessage}>You can now use your device</Text>
-      )}
-
-      {/* Temporary button to simulate approval (remove in production) */}
-      {pendingRequest && (
-        <TouchableOpacity style={styles.simulateButton} onPress={simulateApproval}>
-          <Text style={styles.simulateButtonText}>Simulate Approval</Text>
-        </TouchableOpacity>
       )}
     </View>
   );
@@ -156,17 +140,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#4CAF50',
     marginTop: 20,
-  },
-  simulateButton: {
-    backgroundColor: '#3498db',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  simulateButtonText: {
-    color: 'white',
-    fontSize: 14,
   },
   pendingContainer: {
     alignItems: 'center',

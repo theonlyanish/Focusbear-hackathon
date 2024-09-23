@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, ActivityIndicator, SafeAreaView, Alert } from 'react-native';
 import FriendCard from '../components/FriendCard';
 import InviteCard from '../components/InviteCard';
 import InviteFriendCard from '../components/InviteFriendCard';
 import { inviteService, userService, friendService } from '../services/api';
 import axios from 'axios';
-import { User } from '../types/User';
+import { User } from '../types/user';
 
 
 const FriendsScreen = () => {
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
-    width: '50%',
+    width: '100%',
   },
   sectionTitle: {
     fontSize: 20,

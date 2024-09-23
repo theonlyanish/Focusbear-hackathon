@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import api from '../services/api';
 
 const EmergencyUnlockScreen = () => {
   const [reason, setReason] = useState('');
@@ -15,9 +16,20 @@ const EmergencyUnlockScreen = () => {
     });
   }, [navigation]);
 
-  const handleRequest = () => {
-    // Implement request logic here
-    console.log('Requesting unlock:', { reason, hours, minutes });
+  const handleRequest = async () => {
+    const timePeriod = hours * 3600 + minutes * 60; // Convert to seconds
+    try {
+      await api.post('/unlocks', {
+        userId: global.currentUser.id,
+        reason,
+        timePeriod,
+      });
+      Alert.alert('Success', 'Unlock request sent successfully');
+      navigation.navigate('LockScreen', { pendingRequest: { reason, duration: timePeriod } });
+    } catch (error) {
+      console.error('Failed to send unlock request:', error);
+      Alert.alert('Error', 'Failed to send unlock request. Please try again.');
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface InviteCardProps {

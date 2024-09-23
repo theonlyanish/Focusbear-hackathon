@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../types/navigation';
 import UnlockRequestCard from '../components/UnlockRequestCard';
-import { YourRequestType } from '../types'; 
+//import { YourRequestType } from '../types'; 
 
 // Mock data for unlock requests 
 const mockUnlockRequests = [
